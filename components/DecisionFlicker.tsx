@@ -1,8 +1,10 @@
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo, useCallback, useState } from 'react';
 import { Candidate } from '../models/Candidate';
 import { Category } from '../models/Category';
 import { CandidateImage } from './CandidateImage';
 import styles from './DecisionFlicker.module.scss';
+import DragItem, { DragCallback } from './DragItem';
+import { Pos, subtractPos } from '../models/Length';
 
 export type OnDecide = (result: {
   candidate: Candidate;
@@ -15,6 +17,15 @@ export const DecisionFlicker: React.FC<{
   onDecide?: OnDecide;
   width: number;
 }> = ({ candidate, categories, onDecide, width }) => {
+  const [candidateTransition, setCandidateTransition] = useState<Pos>({
+    x: 0,
+    y: 0,
+  });
+
+  const onCandidateTransition = useCallback((transition: Pos) => {
+    setCandidateTransition(transition);
+  }, []);
+
   return (
     <div
       className={styles.root}
@@ -28,10 +39,10 @@ export const DecisionFlicker: React.FC<{
           position={index / (categories.length - 1)}
         />
       ))}
-      <CandidateImage
+      <CurrentCandidateView
         candidate={candidate}
-        className={styles.candidateView}
-        style={{ '--CandidateImage-width': `${64}px` } as any}
+        transition={candidateTransition}
+        onTransition={onCandidateTransition}
       />
     </div>
   );
@@ -52,6 +63,49 @@ const CategoryView: React.FC<{
   return (
     <div className={styles.CategoryView} style={style}>
       {category.name}
+    </div>
+  );
+};
+
+const CurrentCandidateView: React.FC<{
+  candidate: Candidate;
+  onTransition: (transition: Pos) => void;
+  transition: Pos;
+}> = ({ candidate, onTransition, transition }) => {
+  const style: any = useMemo(
+    () => ({
+      '--CurrentCandidateView-left': `${transition.x}px`,
+      '--CurrentCandidateView-top': `${transition.y}px`,
+    }),
+    [transition]
+  );
+
+  const candidateImageStyle: any = useMemo(
+    () => ({ '--CandidateImage-width': `${64}px` }),
+    []
+  );
+
+  const onDragMove: DragCallback = useCallback(({ from, to }) => {
+    onTransition(subtractPos(to, from));
+  }, []);
+
+  const onDragEnd: DragCallback = useCallback(() => {
+    onTransition({ x: 0, y: 0 });
+  }, []);
+
+  return (
+    <div className={styles.CurrentCandidateView} style={style}>
+      <DragItem
+        isDraggable={true}
+        onDragMove={onDragMove}
+        onDragEnd={onDragEnd}
+      >
+        <CandidateImage
+          candidate={candidate}
+          className={styles.candidateView}
+          style={candidateImageStyle}
+        />
+      </DragItem>
     </div>
   );
 };

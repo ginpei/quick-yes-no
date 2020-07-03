@@ -5,15 +5,29 @@
   height: var(--DecisionFlicker-width);
   margin-left: -1rem;
   margin-right: -1rem;
-  overflow: hidden;
+  // overflow: hidden;
   position: relative;
   width: var(--DecisionFlicker-width);
 }
 
-.candidateView {
-  left: calc(50% - (var(--CandidateImage-width) / 2));
+.CurrentCandidateView {
+  --CurrentCandidateView-left: 0px;
+  --CurrentCandidateView-top: 0px;
+  --CurrentCandidateView-width: 64px;
   position: absolute;
-  top: calc(50% - var(--CandidateImage-width));
+  left: calc(50% - (var(--CurrentCandidateView-width) / 2));
+  top: calc(50% - var(--CurrentCandidateView-width));
+  transform: translate(
+    var(--CurrentCandidateView-left),
+    var(--CurrentCandidateView-top)
+  );
+}
+
+.candidateView {
+  background-color: #fff9;
+  height: var(--CurrentCandidateView-width);
+  pointer-events: none; // better idea?
+  width: var(--CurrentCandidateView-width);
 }
 
 .CategoryView {
