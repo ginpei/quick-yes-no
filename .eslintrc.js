@@ -25,5 +25,6 @@ module.exports = {
     'class-methods-use-this': 'off',
     'import/extensions': ['error', 'never'],
     'import/prefer-default-export': 'off',
+    'no-use-before-define': 'off',
   },
 };
