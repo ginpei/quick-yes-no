@@ -1,18 +1,19 @@
 .root {
+  --DecisionFlicker-width: 800px;
   border: solid 1px gray; // TODO remove
   box-sizing: border-box;
-  height: 400px;
+  height: var(--DecisionFlicker-width);
   margin-left: -1rem;
   margin-right: -1rem;
   overflow: hidden;
   position: relative;
-  width: 800px;
+  width: var(--DecisionFlicker-width);
 }
 
 .candidateView {
-  bottom: 0;
   left: calc(50% - (var(--CandidateImage-width) / 2));
   position: absolute;
+  top: calc(50% - var(--CandidateImage-width));
 }
 
 .CategoryView {
@@ -21,7 +22,6 @@
   --CategoryView-width: 100px;
   align-items: center;
   border-radius: 4px;
-  bottom: 1px;
   box-sizing: border-box;
   color: #666;
   display: flex;
@@ -29,6 +29,7 @@
   justify-content: center;
   left: calc(50% - (var(--CategoryView-width) / 2));
   position: absolute;
+  top: calc(50% - var(--CategoryView-width));
   transform: translate(
     calc((200% - var(--CategoryView-width) / 2) * var(--CategoryView-cos)),
     calc(100% * var(--CategoryView-sin)),

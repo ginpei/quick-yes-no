@@ -16,7 +16,10 @@ export const DecisionFlicker: React.FC<{
   width: number;
 }> = ({ candidate, categories, onDecide, width }) => {
   return (
-    <div className={styles.root} style={{ height: width / 2, width }}>
+    <div
+      className={styles.root}
+      style={{ '--DecisionFlicker-width': `${width}px` } as any}
+    >
       {categories.map((category, index) => (
         <CategoryView
           category={category}
