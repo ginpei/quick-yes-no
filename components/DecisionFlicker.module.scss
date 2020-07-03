@@ -31,8 +31,8 @@
 }
 
 .CategoryView {
-  --CategoryView-cos: 0;
-  --CategoryView-sin: 0;
+  --CategoryView-left: 0;
+  --CategoryView-top: 0;
   --CategoryView-width: 100px;
   align-items: center;
   border-radius: 4px;
@@ -43,14 +43,12 @@
   justify-content: center;
   left: calc(50% - (var(--CategoryView-width) / 2));
   position: absolute;
-  top: calc(50% - var(--CategoryView-width));
-  transform: translate(
-    calc((200% - var(--CategoryView-width) / 2) * var(--CategoryView-cos)),
-    calc(100% * var(--CategoryView-sin)),
-  );
+  top: calc(50% - (var(--CategoryView-width) / 2));
+  transform: translate(var(--CategoryView-left), var(--CategoryView-top));
   width: var(--CategoryView-width);
 
-  &:hover {
+  &:hover,
+  &[data-hovered="true"] {
     border: solid 1px lightgray;
     z-index: 1;
   }

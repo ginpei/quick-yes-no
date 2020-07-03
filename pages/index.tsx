@@ -1,22 +1,38 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
-import { Category, decomojiCategories } from '../models/Category';
-import { Candidate, decomojiCandidates } from '../models/Candidate';
-import styles from './index.module.scss';
-import { randomizeArray } from '../util/randomizeArray';
-import { DecisionFlicker } from '../components/DecisionFlicker';
+import { useCallback, useEffect, useState } from 'react';
 import { CandidateImage } from '../components/CandidateImage';
+import { DecisionFlicker, OnDecide } from '../components/DecisionFlicker';
+import { Candidate, decomojiCandidates } from '../models/Candidate';
+import { Category, decomojiCategories } from '../models/Category';
+import { randomizeArray } from '../util/randomizeArray';
 
 interface PageProps {
   candidates: Candidate[];
   categories: Category[];
 }
 
+interface Decision {
+  candidate: Candidate;
+  category: Category;
+}
+
 const HomePage: React.FC<PageProps> = ({ candidates, categories }) => {
-  const [current, setCurrent] = useState(candidates[0]);
-  const [restCandidates] = useState(candidates.slice(1));
+  const [current, setCurrent] = useState<Candidate | null>(candidates[0]);
+  const [recent, setRecent] = useState<Decision | null>(null);
+  const [restCandidates, setRestCandidates] = useState(candidates.slice(1));
   const [width, setWidth] = useState(0);
+
+  const onDecide: OnDecide = useCallback(
+    ({ candidate, category }) => {
+      setRecent({ candidate, category });
+
+      const next = restCandidates[0] || null;
+      setCurrent(next);
+      setRestCandidates(restCandidates.slice(1));
+    },
+    [restCandidates]
+  );
 
   useEffect(() => {
     const maxWidth = 800;
@@ -43,19 +59,17 @@ const HomePage: React.FC<PageProps> = ({ candidates, categories }) => {
         />
       </Head>
       <h1>Decomoji List</h1>
+      <p>
+        {(current ? 1 : 0) + restCandidates.length} / {candidates.length}
+        <br />
+        {recent ? `${recent.candidate.name} → ${recent.category.name}` : '.'}
+      </p>
       <DecisionFlicker
         candidate={current}
         categories={categories}
+        onDecide={onDecide}
         width={width}
       />
-      <ul>
-        {categories.map((category) => (
-          <li key={category.name}>{category.name}</li>
-        ))}
-      </ul>
-      <div className="currentCandidate">
-        <CandidateImage candidate={current} />
-      </div>
       <ul>
         {restCandidates.slice(0, 5).map((candidate) => (
           <li key={candidate.name}>
