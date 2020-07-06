@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
+import { CSSProperties, useCallback, useMemo, useState } from 'react';
 import { Candidate } from '../models/Candidate';
 import { Category } from '../models/Category';
 import { measureDistance, Pos, subtractPos } from '../models/Length';
+import { cssVar } from '../util/cssVar';
 import { CandidateImage } from './CandidateImage';
 import styles from './DecisionFlicker.module.scss';
 import DragItem, { DragCallback } from './DragItem';
@@ -53,7 +54,7 @@ export const DecisionFlicker: React.FC<{
   return (
     <div
       className={styles.root}
-      style={{ '--DecisionFlicker-width': `${width}px` } as any}
+      style={cssVar({ '--DecisionFlicker-width': `${width}px` })}
     >
       {categoryLayouts.map((layout) => (
         <CategoryView
@@ -78,12 +79,13 @@ const CategoryView: React.FC<{
   hovered: boolean;
   layout: CategoryLayout;
 }> = ({ hovered, layout }) => {
-  const style: any = useMemo(
-    () => ({
-      '--CategoryView-left': `${layout.x}px`,
-      '--CategoryView-top': `${layout.y}px`,
-      '--CategoryView-width': `${layout.width}px`,
-    }),
+  const style: CSSProperties = useMemo(
+    () =>
+      cssVar({
+        '--CategoryView-left': `${layout.x}px`,
+        '--CategoryView-top': `${layout.y}px`,
+        '--CategoryView-width': `${layout.width}px`,
+      }),
     [layout]
   );
   return (
@@ -99,16 +101,17 @@ const CurrentCandidateView: React.FC<{
   onTransition: (transition: Pos) => void;
   transition: Pos;
 }> = ({ candidate, onDrop, onTransition, transition }) => {
-  const style: any = useMemo(
-    () => ({
-      '--CurrentCandidateView-left': `${transition.x}px`,
-      '--CurrentCandidateView-top': `${transition.y}px`,
-    }),
+  const style: CSSProperties = useMemo(
+    () =>
+      cssVar({
+        '--CurrentCandidateView-left': `${transition.x}px`,
+        '--CurrentCandidateView-top': `${transition.y}px`,
+      }),
     [transition]
   );
 
-  const candidateImageStyle: any = useMemo(
-    () => ({ '--CandidateImage-width': `${64}px` }),
+  const candidateImageStyle: CSSProperties = useMemo(
+    () => cssVar({ '--CandidateImage-width': `${64}px` }),
     []
   );
 
