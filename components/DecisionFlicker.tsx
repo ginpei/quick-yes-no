@@ -223,7 +223,11 @@ function findNearestCategory(
   let nearest: Category | null = null;
 
   categoryLayouts.forEach((layout) => {
-    const distance = measureDistance(layout, transition);
+    const center: Pos = {
+      x: layout.x,
+      y: layout.y - imageWidth / 2,
+    };
+    const distance = measureDistance(center, transition);
     if (distance < min && distance < range) {
       min = distance;
       nearest = layout.category;
