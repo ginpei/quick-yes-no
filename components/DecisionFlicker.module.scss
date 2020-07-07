@@ -12,13 +12,14 @@ $z-index-hovering: 1;
   width: var(--DecisionFlicker-width);
 }
 
-.CurrentCandidateView {
+.CurrentCandidateView,
+.LastCandidateView {
   --CurrentCandidateView-left: 0px;
   --CurrentCandidateView-top: 0px;
   --CurrentCandidateView-width: 64px;
   position: absolute;
   left: calc(50% - (var(--CurrentCandidateView-width) / 2));
-  top: calc(50% - var(--CurrentCandidateView-width));
+  top: 50%;
   transform: translate(
     var(--CurrentCandidateView-left),
     var(--CurrentCandidateView-top)
@@ -37,22 +38,31 @@ $z-index-hovering: 1;
   --CategoryView-left: 0;
   --CategoryView-top: 0;
   --CategoryView-width: 100px;
-  align-items: center;
-  border-radius: 4px;
-  box-sizing: border-box;
-  color: #666;
-  display: flex;
   height: var(--CategoryView-width);
-  justify-content: center;
   left: calc(50% - (var(--CategoryView-width) / 2));
   position: absolute;
   top: calc(50% - (var(--CategoryView-width) / 2));
   transform: translate(var(--CategoryView-left), var(--CategoryView-top));
   width: var(--CategoryView-width);
+}
+
+.CategoryView_content {
+  align-items: center;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #666;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
 
   &:hover,
   &[data-hovered="true"] {
     border: solid 1px lightgray;
     z-index: $z-index-hovering;
+  }
+
+  &[data-eating="true"] {
+    background-color: lightgray;
   }
 }
