@@ -6,6 +6,7 @@ import { animate } from '../util/animate';
 import { cssVar } from '../util/cssVar';
 import { sleep } from '../util/sleep';
 import { CandidateImage } from './CandidateImage';
+import { DecisionCategoryView } from './DecisionCategoryView';
 import styles from './DecisionFlicker.module.scss';
 import DragItem, { DragCallback } from './DragItem';
 
@@ -14,7 +15,7 @@ export type OnDecide = (result: {
   category: Category;
 }) => void;
 
-interface CategoryLayout {
+export interface CategoryLayout {
   category: Category;
   width: number;
   x: number;
@@ -112,7 +113,7 @@ export const DecisionFlicker: React.FC<{
       style={cssVar({ '--DecisionFlicker-width': `${width}px` })}
     >
       {categoryLayouts.map((layout) => (
-        <CategoryView
+        <DecisionCategoryView
           hovered={layout.category === nearestCategory}
           key={layout.category.name}
           layout={layout}
@@ -130,32 +131,6 @@ export const DecisionFlicker: React.FC<{
         candidate={lastCandidate}
         transition={lastCandidateTransition}
       />
-    </div>
-  );
-};
-
-const CategoryView: React.FC<{
-  hovered: boolean;
-  layout: CategoryLayout;
-}> = ({ hovered, layout }) => {
-  const style: CSSProperties = useMemo(
-    () =>
-      cssVar({
-        '--CategoryView-left': `${layout.x}px`,
-        '--CategoryView-top': `${layout.y}px`,
-        '--CategoryView-width': `${layout.width}px`,
-      }),
-    [layout]
-  );
-  return (
-    <div className={styles.CategoryView} style={style}>
-      <div
-        className={styles.CategoryView_content}
-        data-category-id={layout.category.name}
-        data-hovered={hovered}
-      >
-        {layout.category.name}
-      </div>
     </div>
   );
 };
