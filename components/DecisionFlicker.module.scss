@@ -2,9 +2,9 @@ $z-index-hovering: 1;
 
 .root {
   --DecisionFlicker-width: 800px;
-  border: solid 1px gray; // TODO remove
   box-sizing: border-box;
   height: var(--DecisionFlicker-width);
+  margin-bottom: var(--DecisionFlicker-width); // TODO change height instead
   margin-left: -1rem;
   margin-right: -1rem;
   // overflow: hidden;
