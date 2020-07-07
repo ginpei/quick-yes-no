@@ -32,3 +32,17 @@ $z-index-hovering: 1;
     background-color: lightgray;
   }
 }
+
+.LastCandidateView {
+  --LastCandidateView-left: 0px;
+  --LastCandidateView-top: 0px;
+  --LastCandidateView-width: 64px;
+  position: absolute;
+  left: calc(50% - (var(--LastCandidateView-width) / 2));
+  top: 50%;
+  transform: translate(
+    var(--LastCandidateView-left),
+    var(--LastCandidateView-top)
+  );
+  z-index: $z-index-hovering;
+}

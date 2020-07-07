@@ -12,8 +12,7 @@ $z-index-hovering: 1;
   width: var(--DecisionFlicker-width);
 }
 
-.CurrentCandidateView,
-.LastCandidateView {
+.CurrentCandidateView {
   --CurrentCandidateView-left: 0px;
   --CurrentCandidateView-top: 0px;
   --CurrentCandidateView-width: 64px;
