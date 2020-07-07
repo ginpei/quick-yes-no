@@ -23,13 +23,10 @@ $z-index-hovering: 1;
   width: 100%;
 
   &:hover,
-  &[data-hovered="true"] {
+  &[data-hovered="true"],
+  &[data-eating="true"] {
     border: solid 1px lightgray;
     z-index: $z-index-hovering;
-  }
-
-  &[data-eating="true"] {
-    background-color: lightgray;
   }
 }
 
