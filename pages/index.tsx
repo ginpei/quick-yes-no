@@ -68,15 +68,9 @@ const HomePage: React.FC<PageProps> = ({ candidates, categories }) => {
         candidate={current}
         categories={categories}
         onDecide={onDecide}
+        restCandidates={restCandidates}
         width={width}
       />
-      <ul>
-        {restCandidates.slice(0, 5).map((candidate) => (
-          <li key={candidate.name}>
-            <CandidateImage candidate={candidate} />
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };

@@ -26,6 +26,24 @@ $z-index-hovering: 1;
   z-index: $z-index-hovering;
 }
 
+.LiningCandidateView {
+  --LiningCandidateView-index: 0;
+  --LiningCandidateView-length: 5;
+  --LiningCandidateView-progress: calc(
+    (var(--LiningCandidateView-length) - var(--LiningCandidateView-index)) /
+      var(--LiningCandidateView-length)
+  );
+  --LiningCandidateView-width: 64px;
+  position: absolute;
+  left: calc(50% - (var(--LiningCandidateView-width) / 2));
+  opacity: calc(0.4 + 0.2 * var(--LiningCandidateView-progress));
+  top: calc(
+    50% +
+    (var(--LiningCandidateView-index) + 1.1) * var(--LiningCandidateView-width)
+  );
+  transform: scale(calc(0.4 + 0.4 * var(--LiningCandidateView-progress)));
+}
+
 .candidateView {
   background-color: #fff9;
   height: var(--CurrentCandidateView-width);

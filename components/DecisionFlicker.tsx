@@ -28,8 +28,9 @@ export const DecisionFlicker: React.FC<{
   candidate: Candidate | null;
   categories: Category[];
   onDecide: OnDecide;
+  restCandidates: Candidate[];
   width: number;
-}> = ({ candidate, categories, onDecide, width }) => {
+}> = ({ candidate, categories, onDecide, restCandidates, width }) => {
   const [lastCandidate, setLastCandidate] = useState<Candidate | null>(null);
   const [
     lastCategoryLayout,
@@ -96,6 +97,13 @@ export const DecisionFlicker: React.FC<{
           layout={layout}
         />
       ))}
+      {restCandidates.slice(0, 5).map((liningCandidate, index) => (
+        <LiningCandidateView
+          candidate={liningCandidate}
+          index={index}
+          key={liningCandidate.name}
+        />
+      ))}
       {candidate && (
         <CurrentCandidateView
           candidate={candidate}
@@ -104,6 +112,27 @@ export const DecisionFlicker: React.FC<{
           onTransition={onCandidateTransition}
         />
       )}
+    </div>
+  );
+};
+
+const LiningCandidateView: React.FC<{
+  candidate: Candidate;
+  index: number;
+}> = ({ candidate, index }) => {
+  const style: CSSProperties = useMemo(
+    () => ({
+      ...cssVar({
+        '--LiningCandidateView-index': String(index),
+        '--LiningCandidateView-width': `${imageWidth}px`,
+      }),
+    }),
+    [index]
+  );
+
+  return (
+    <div className={styles.LiningCandidateView} style={style}>
+      <CandidateImage candidate={candidate} width={imageWidth} />
     </div>
   );
 };
