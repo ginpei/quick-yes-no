@@ -143,6 +143,11 @@ const CurrentCandidateView: React.FC<{
   onTransition: (transition: Pos) => void;
   transition: Pos;
 }> = ({ candidate, onDrop, onTransition, transition }) => {
+  const moving: boolean = useMemo(
+    () => transition.x !== 0 && transition.y !== 0,
+    [transition]
+  );
+
   const style: CSSProperties = useMemo(
     () =>
       cssVar({
@@ -169,7 +174,11 @@ const CurrentCandidateView: React.FC<{
   }, [onDrop]);
 
   return (
-    <div className={styles.CurrentCandidateView} style={style}>
+    <div
+      className={styles.CurrentCandidateView}
+      data-moving={moving}
+      style={style}
+    >
       <DragItem
         isDraggable={true}
         onDragMove={onDragMove}

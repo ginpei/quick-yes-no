@@ -16,6 +16,7 @@ $z-index-hovering: 1;
   --CurrentCandidateView-left: 0px;
   --CurrentCandidateView-top: 0px;
   --CurrentCandidateView-width: 64px;
+  height: var(--CurrentCandidateView-width);
   position: absolute;
   left: calc(50% - (var(--CurrentCandidateView-width) / 2));
   top: 50%;
@@ -23,7 +24,12 @@ $z-index-hovering: 1;
     var(--CurrentCandidateView-left),
     var(--CurrentCandidateView-top)
   );
+  width: var(--CurrentCandidateView-width);
   z-index: $z-index-hovering;
+
+  &[data-moving="true"] {
+    box-shadow: 0 0 3px 1px skyblue;
+  }
 }
 
 .LiningCandidateView {
