@@ -42,12 +42,12 @@ $z-index-hovering: 1;
   --LiningCandidateView-width: 64px;
   position: absolute;
   left: calc(50% - (var(--LiningCandidateView-width) / 2));
-  opacity: calc(0.4 + 0.2 * var(--LiningCandidateView-progress));
+  opacity: calc(0.2 + 0.4 * var(--LiningCandidateView-progress));
   top: calc(
     50% +
     (var(--LiningCandidateView-index) + 1.1) * var(--LiningCandidateView-width)
   );
-  transform: scale(calc(0.4 + 0.4 * var(--LiningCandidateView-progress)));
+  transform: scale(calc(0.2  + 0.4 * var(--LiningCandidateView-progress)));
 }
 
 .candidateView {
