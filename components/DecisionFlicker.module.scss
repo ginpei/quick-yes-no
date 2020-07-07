@@ -20,6 +20,7 @@ $z-index-hovering: 1;
   position: absolute;
   left: calc(50% - (var(--CurrentCandidateView-width) / 2));
   top: 50%;
+  transition: transform 300ms;
   transform: translate(
     var(--CurrentCandidateView-left),
     var(--CurrentCandidateView-top)
@@ -29,6 +30,11 @@ $z-index-hovering: 1;
 
   &[data-moving="true"] {
     box-shadow: 0 0 3px 1px skyblue;
+    transition: transform 0ms;
+  }
+
+  &[data-decided="true"] {
+    transition: transform 0ms;
   }
 }
 

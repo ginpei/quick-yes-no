@@ -1,4 +1,10 @@
-import { CSSProperties, useCallback, useMemo, useState } from 'react';
+import {
+  CSSProperties,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
 import { Candidate } from '../models/Candidate';
 import { Category } from '../models/Category';
 import { measureDistance, Pos, subtractPos } from '../models/Length';
@@ -143,6 +149,8 @@ const CurrentCandidateView: React.FC<{
   onTransition: (transition: Pos) => void;
   transition: Pos;
 }> = ({ candidate, onDrop, onTransition, transition }) => {
+  const [decided, setDecided] = useState(false);
+
   const moving: boolean = useMemo(
     () => transition.x !== 0 && transition.y !== 0,
     [transition]
@@ -162,6 +170,12 @@ const CurrentCandidateView: React.FC<{
     []
   );
 
+  useEffect(() => {
+    setDecided(true);
+    const id = requestAnimationFrame(() => setDecided(false));
+    return () => cancelAnimationFrame(id);
+  }, [candidate]);
+
   const onDragMove: DragCallback = useCallback(
     ({ from, to }) => {
       onTransition(subtractPos(to, from));
@@ -176,6 +190,7 @@ const CurrentCandidateView: React.FC<{
   return (
     <div
       className={styles.CurrentCandidateView}
+      data-decided={decided}
       data-moving={moving}
       style={style}
     >
