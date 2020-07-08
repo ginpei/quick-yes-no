@@ -16,16 +16,16 @@ $z-index-hovering: 1;
   --CurrentCandidateView-left: 0px;
   --CurrentCandidateView-top: 0px;
   --CurrentCandidateView-width: 64px;
-  height: var(--CurrentCandidateView-width);
+  height: calc(2 * var(--CurrentCandidateView-width));
   position: absolute;
-  left: calc(50% - (var(--CurrentCandidateView-width) / 2));
-  top: 50%;
+  left: calc(50% - var(--CurrentCandidateView-width));
+  top: calc(50% - (var(--CurrentCandidateView-width) / 2));
   transition: transform 300ms;
   transform: translate(
     var(--CurrentCandidateView-left),
     var(--CurrentCandidateView-top)
   );
-  width: var(--CurrentCandidateView-width);
+  width: calc(2 * var(--CurrentCandidateView-width));
   z-index: $z-index-hovering;
 
   &[data-moving="true"] {

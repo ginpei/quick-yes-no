@@ -17,14 +17,14 @@ body {
   width: 100%;
 }
 
-.ui-center {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
 .ui-fill {
   display: block;
   height: 100%;
   width: 100%;
+}
+
+.ui-center {
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }

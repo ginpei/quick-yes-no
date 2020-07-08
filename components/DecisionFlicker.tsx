@@ -199,11 +199,13 @@ const CurrentCandidateView: React.FC<{
         onDragMove={onDragMove}
         onDragEnd={onDragEnd}
       >
-        <CandidateImage
-          candidate={candidate}
-          className={styles.candidateView}
-          style={candidateImageStyle}
-        />
+        <div className="ui-fill ui-center">
+          <CandidateImage
+            candidate={candidate}
+            className={styles.candidateView}
+            style={candidateImageStyle}
+          />
+        </div>
       </DragItem>
     </div>
   );
