@@ -1,10 +1,16 @@
-import { CSSProperties, RefObject, useEffect, useMemo, useRef } from 'react';
+import {
+  CSSProperties,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Candidate } from '../models/Candidate';
 import { config } from '../models/Config';
-import { Pos } from '../models/Length';
-import { animate } from '../util/animate';
+import { Pos, subtractPos } from '../models/Length';
 import { cssVar } from '../util/cssVar';
-import { sleep } from '../util/sleep';
 import { CandidateImage } from './CandidateImage';
 import styles from './DecisionCategoryView.module.scss';
 import { CategoryLayout } from './DecisionFlicker';
@@ -14,7 +20,7 @@ const noop = () => {
 };
 
 // TODO replace with state somehow
-let activeAnimationId = 0;
+const activeAnimationId = 0;
 
 /**
  * 1. Print category block
@@ -29,9 +35,12 @@ export const DecisionCategoryView: React.FC<{
   const refCategory = useRef<HTMLDivElement>(null);
   const refCandidate = useRef<HTMLDivElement>(null);
 
+  const [eating, setEating] = useState(false);
+
   const style: CSSProperties = useMemo(
     () =>
       cssVar({
+        '--CategoryView-eatDuration': `${2.5 * config.duration}ms`,
         '--CategoryView-left': `${layout.x}px`,
         '--CategoryView-top': `${layout.y}px`,
         '--CategoryView-width': `${layout.width}px`,
@@ -47,39 +56,33 @@ export const DecisionCategoryView: React.FC<{
     [layout, candidateTransition]
   );
 
+  const onAnimationEnd = useCallback(() => {
+    setEating(false);
+  }, []);
+
   useEffect(() => {
-    const elCategory = refCategory.current;
-    if (!elCategory || !refCandidate.current || !decidedCandidate) {
+    if (!decidedCandidate) {
       return noop;
     }
 
-    const animationId = Math.random();
-    activeAnimationId = animationId;
-
-    animateChosenCategory(
-      elCategory,
-      refCandidate.current,
-      layout,
-      candidateTransition,
-      animationId
-    );
-
-    return () => resetChosenCategoryAnimation(elCategory);
-  }, [
-    refCategory.current,
-    refCandidate.current,
-    decidedCandidate,
-    layout,
-    candidateTransition,
-  ]);
+    setEating(false);
+    const id = requestAnimationFrame(() => setEating(true));
+    return () => cancelAnimationFrame(id);
+  }, [decidedCandidate]);
 
   return (
-    <div className={styles.root} style={style}>
+    <div
+      className={styles.root}
+      data-eating={eating}
+      onAnimationEnd={onAnimationEnd}
+      style={style}
+    >
       <div className={styles.content} data-hovered={hovered} ref={refCategory}>
         {layout.category.name}
       </div>
       <LastCandidateView
         candidate={decidedCandidate}
+        categoryPos={layout}
         refAnimationTarget={refCandidate}
         pos={candidatePos}
       />
@@ -89,17 +92,19 @@ export const DecisionCategoryView: React.FC<{
 
 const LastCandidateView: React.FC<{
   candidate: Candidate | null;
+  categoryPos: Pos;
   refAnimationTarget: RefObject<HTMLDivElement>;
   pos: Pos;
-}> = ({ candidate, refAnimationTarget, pos }) => {
-  const style: CSSProperties = useMemo(
-    () =>
-      cssVar({
-        '--LastCandidateView-left': `${pos.x}px`,
-        '--LastCandidateView-top': `${pos.y}px`,
-      }),
-    [pos]
-  );
+}> = ({ candidate, categoryPos, refAnimationTarget, pos }) => {
+  const style: CSSProperties = useMemo(() => {
+    const dTop = -config.candidateImageWidth / 2;
+    return cssVar({
+      '--LastCandidateView-destination-left': `${0}px`,
+      '--LastCandidateView-destination-top': `${dTop}px`,
+      '--LastCandidateView-left': `${pos.x}px`,
+      '--LastCandidateView-top': `${pos.y}px`,
+    });
+  }, [categoryPos, pos]);
 
   const candidateImageStyle: CSSProperties = useMemo(
     () =>
@@ -121,90 +126,3 @@ const LastCandidateView: React.FC<{
     </div>
   );
 };
-
-async function animateChosenCategory(
-  elCategory: HTMLElement,
-  elCandidate: HTMLElement,
-  destination: CategoryLayout,
-  offset: Pos,
-  animationId: number
-) {
-  // how to make them better?
-
-  const wholeDuration = config.duration;
-
-  elCategory.setAttribute('data-eating', 'true');
-
-  const x = destination.x - offset.x;
-  const y = destination.y - offset.y - config.candidateImageWidth / 2;
-
-  animate(
-    elCandidate,
-    [
-      { opacity: '1', transform: 'scale(1)' },
-      {
-        opacity: '0',
-        transform: `translate(${x}px, ${y}px) scale(0.5)`,
-      },
-    ],
-    {
-      duration: config.duration,
-      easing: 'ease-in',
-      fill: 'forwards',
-    }
-  );
-
-  await sleep(config.duration / 2);
-
-  if (activeAnimationId !== animationId) {
-    return;
-  }
-
-  const anim1 = animate(
-    elCategory,
-    [{ transform: 'scale(1)' }, { transform: 'scale(0.5)' }],
-    {
-      duration: wholeDuration / 3,
-      easing: 'ease-out',
-      fill: 'forwards',
-    }
-  );
-
-  await anim1.finished;
-
-  if (activeAnimationId !== animationId) {
-    animate(
-      elCategory,
-      [{ transform: 'scale(1)' }, { transform: 'scale(1)' }],
-      {
-        fill: 'forwards',
-      }
-    );
-
-    return;
-  }
-
-  const anim2 = animate(
-    elCategory,
-    [{ transform: 'scale(0.5)' }, { transform: 'scale(1)' }],
-    {
-      duration: (wholeDuration * 2) / 3,
-      easing: 'cubic-bezier(.2,3,1,1.2)',
-      fill: 'forwards',
-    }
-  );
-
-  await anim2.finished;
-
-  await sleep(config.duration);
-
-  if (activeAnimationId !== animationId) {
-    return;
-  }
-
-  elCategory.removeAttribute('data-eating');
-}
-
-function resetChosenCategoryAnimation(elCategory: HTMLElement) {
-  elCategory.removeAttribute('data-eating');
-}

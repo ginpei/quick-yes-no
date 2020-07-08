@@ -1,6 +1,7 @@
 $z-index-hovering: 1;
 
 .root {
+  --CategoryView-eatDuration: var(--duration);
   --CategoryView-left: 0;
   --CategoryView-top: 0;
   --CategoryView-width: 100px;
@@ -24,22 +25,62 @@ $z-index-hovering: 1;
 
   &:hover,
   &[data-hovered="true"],
-  &[data-eating="true"] {
+  .root[data-eating="true"] & {
     border: solid 1px lightgray;
     z-index: $z-index-hovering;
+  }
+
+  .root[data-eating="true"] & {
+    animation: category-eat var(--CategoryView-eatDuration) cubic-bezier(.2, 3, 1, 1.2);
   }
 }
 
 .LastCandidateView {
+  --LastCandidateView-destination-left: 0px;
+  --LastCandidateView-destination-top: 0px;
   --LastCandidateView-left: 0px;
   --LastCandidateView-top: 0px;
   --LastCandidateView-width: 64px;
   position: absolute;
   left: calc(50% - (var(--LastCandidateView-width) / 2));
+  opacity: 0;
+  pointer-events: none;
   top: 50%;
-  transform: translate(
-    var(--LastCandidateView-left),
-    var(--LastCandidateView-top)
-  );
   z-index: $z-index-hovering;
+
+  .root[data-eating="true"] & {
+    animation: candidate-eaten var(--CategoryView-eatDuration) linear;
+  }
+}
+
+@keyframes category-eat {
+  0% { transform: scale(1); }
+  20% { transform: scale(1); }
+  40% { transform: scale(0.5); }
+  80% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes candidate-eaten {
+  0% {
+    opacity: 1;
+    transform:
+      translate(
+        var(--LastCandidateView-left),
+        var(--LastCandidateView-top)
+      )
+      scale(1);
+  }
+  40% {
+    opacity: 0;
+    transform:
+      translate(
+        var(--LastCandidateView-destination-left),
+        var(--LastCandidateView-destination-top)
+      )
+      scale(0.5);
+  }
+  100% {
+    opacity: 0;
+  }
 }
