@@ -1,0 +1,99 @@
+.root {
+  --animation-duration: 900ms;
+}
+
+.Boomer {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+}
+
+button.Boomer_button {
+  font-size: 100px;
+  height: 1.5em;
+  width: 1.5em;
+
+  [data-animating="true"] & {
+    animation: boom var(--animation-duration) cubic-bezier(.2, 3, 1, 1.2);
+  }
+}
+
+.Particle {
+  --partial-distance: 100px;
+  --partial-index: 0;
+  --partial-length: 0;
+  --partial-progress: calc(var(--partial-index) / var(--partial-length));
+  --partial-size: 20px;
+  height: var(--partial-size);
+  left: calc(50% - (var(--partial-size) / 2));
+  position: absolute;
+  top: calc(50% - (var(--partial-size) / 2));
+  width: var(--partial-size);
+  pointer-events: none;
+}
+
+.Particle_content {
+  background-color: currentColor;
+  border-radius: 50%;
+}
+
+.Particle_translate {
+  [data-animating="true"] & {
+    animation: bang-translate var(--animation-duration) cubic-bezier(0.2, 1.5, 0.5, 1.5);
+  }
+}
+
+.Particle_visibility {
+  opacity: 0;
+
+  [data-animating="true"] & {
+    animation: bang-visibility var(--animation-duration);
+  }
+}
+
+@keyframes boom {
+  0% { transform: scale(1); }
+  10% { transform: scale(0.6); }
+  30% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bang-translate {
+  0% {
+    transform: rotate(calc(360deg * var(--partial-progress)));
+  }
+  10% {
+    transform: rotate(calc(360deg * var(--partial-progress)));
+  }
+  50% {
+  }
+  80% {
+    transform:
+      rotate(calc(360deg * var(--partial-progress)))
+      translateX(calc(0.8 * var(--partial-distance)));
+  }
+  100% {
+    transform:
+      rotate(calc(1.5*360deg * var(--partial-progress)))
+      translateX(calc(0.8 * var(--partial-distance)));
+  }
+}
+
+@keyframes bang-visibility {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  10% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
