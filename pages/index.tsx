@@ -1,4 +1,4 @@
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import { DecisionFlicker, OnDecide } from '../components/DecisionFlicker';
@@ -82,7 +82,7 @@ const HomePage: React.FC<PageProps> = ({ candidates, categories }) => {
 
 export default HomePage;
 
-export const getStaticProps: GetStaticProps<PageProps> = async () => ({
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => ({
   props: {
     candidates: randomizeArray(decomojiCandidates),
     categories: decomojiCategories,
