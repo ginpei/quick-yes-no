@@ -1,5 +1,6 @@
 import { CSSProperties, RefObject, useEffect, useMemo, useRef } from 'react';
 import { Candidate } from '../models/Candidate';
+import { config } from '../models/Config';
 import { Pos } from '../models/Length';
 import { animate } from '../util/animate';
 import { cssVar } from '../util/cssVar';
@@ -11,10 +12,6 @@ import { CategoryLayout } from './DecisionFlicker';
 const noop = () => {
   /* none */
 };
-
-// TODO move to config placed somewhere in the future
-const animationDuration = 300;
-const imageWidth = 64;
 
 // TODO replace with state somehow
 let activeAnimationId = 0;
@@ -105,7 +102,8 @@ const LastCandidateView: React.FC<{
   );
 
   const candidateImageStyle: CSSProperties = useMemo(
-    () => cssVar({ '--CandidateImage-width': `${imageWidth}px` }),
+    () =>
+      cssVar({ '--CandidateImage-width': `${config.candidateImageWidth}px` }),
     []
   );
 
@@ -133,12 +131,12 @@ async function animateChosenCategory(
 ) {
   // how to make them better?
 
-  const wholeDuration = animationDuration;
+  const wholeDuration = config.duration;
 
   elCategory.setAttribute('data-eating', 'true');
 
   const x = destination.x - offset.x;
-  const y = destination.y - offset.y - imageWidth / 2;
+  const y = destination.y - offset.y - config.candidateImageWidth / 2;
 
   animate(
     elCandidate,
@@ -150,13 +148,13 @@ async function animateChosenCategory(
       },
     ],
     {
-      duration: animationDuration,
+      duration: config.duration,
       easing: 'ease-in',
       fill: 'forwards',
     }
   );
 
-  await sleep(animationDuration / 2);
+  await sleep(config.duration / 2);
 
   if (activeAnimationId !== animationId) {
     return;
@@ -198,7 +196,7 @@ async function animateChosenCategory(
 
   await anim2.finished;
 
-  await sleep(animationDuration);
+  await sleep(config.duration);
 
   if (activeAnimationId !== animationId) {
     return;

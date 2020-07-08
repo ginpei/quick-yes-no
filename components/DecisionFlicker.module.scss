@@ -20,7 +20,7 @@ $z-index-hovering: 1;
   position: absolute;
   left: calc(50% - var(--CurrentCandidateView-width));
   top: calc(50% - (var(--CurrentCandidateView-width) / 2));
-  transition: transform 300ms;
+  transition: transform var(--duration);
   transform: translate(
     var(--CurrentCandidateView-left),
     var(--CurrentCandidateView-top)

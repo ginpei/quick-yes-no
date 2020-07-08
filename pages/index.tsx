@@ -1,10 +1,10 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
-import { CandidateImage } from '../components/CandidateImage';
 import { DecisionFlicker, OnDecide } from '../components/DecisionFlicker';
 import { Candidate, decomojiCandidates } from '../models/Candidate';
 import { Category, decomojiCategories } from '../models/Category';
+import { config } from '../models/Config';
 import { randomizeArray } from '../util/randomizeArray';
 
 interface PageProps {
@@ -57,6 +57,11 @@ const HomePage: React.FC<PageProps> = ({ candidates, categories }) => {
           name="viewport"
           content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"
         />
+        <style>{`
+          :root {
+            --duration: ${config.duration}ms;
+          }
+        `}</style>
       </Head>
       <h1>Decomoji List</h1>
       <p>

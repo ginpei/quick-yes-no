@@ -1,12 +1,13 @@
 import {
   CSSProperties,
   useCallback,
+  useEffect,
   useMemo,
   useState,
-  useEffect,
 } from 'react';
 import { Candidate } from '../models/Candidate';
 import { Category } from '../models/Category';
+import { config } from '../models/Config';
 import { measureDistance, Pos, subtractPos } from '../models/Length';
 import { cssVar } from '../util/cssVar';
 import { CandidateImage } from './CandidateImage';
@@ -25,10 +26,6 @@ export interface CategoryLayout {
   x: number;
   y: number;
 }
-
-// TODO move to config placed somewhere in the future
-const animationDuration = 300;
-const imageWidth = 64;
 
 export const DecisionFlicker: React.FC<{
   candidate: Candidate | null;
@@ -130,7 +127,7 @@ const LiningCandidateView: React.FC<{
     () => ({
       ...cssVar({
         '--LiningCandidateView-index': String(index),
-        '--LiningCandidateView-width': `${imageWidth}px`,
+        '--LiningCandidateView-width': `${config.candidateImageWidth}px`,
       }),
     }),
     [index]
@@ -138,7 +135,10 @@ const LiningCandidateView: React.FC<{
 
   return (
     <div className={styles.LiningCandidateView} style={style}>
-      <CandidateImage candidate={candidate} width={imageWidth} />
+      <CandidateImage
+        candidate={candidate}
+        width={config.candidateImageWidth}
+      />
     </div>
   );
 };
@@ -166,7 +166,8 @@ const CurrentCandidateView: React.FC<{
   );
 
   const candidateImageStyle: CSSProperties = useMemo(
-    () => cssVar({ '--CandidateImage-width': `${imageWidth}px` }),
+    () =>
+      cssVar({ '--CandidateImage-width': `${config.candidateImageWidth}px` }),
     []
   );
 
@@ -242,7 +243,7 @@ function findNearestCategory(
   categoryLayouts.forEach((layout) => {
     const center: Pos = {
       x: layout.x,
-      y: layout.y - imageWidth / 2,
+      y: layout.y - config.candidateImageWidth / 2,
     };
     const distance = measureDistance(center, transition);
     if (distance < min && distance < range) {
