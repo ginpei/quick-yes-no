@@ -173,8 +173,8 @@ const CurrentCandidateView: React.FC<{
 
   useEffect(() => {
     setDecided(true);
-    const id = requestAnimationFrame(() => setDecided(false));
-    return () => cancelAnimationFrame(id);
+    const id = window.setTimeout(() => setDecided(false), 1);
+    return () => window.clearTimeout(id);
   }, [candidate]);
 
   const onDragMove: DragCallback = useCallback(

@@ -65,8 +65,13 @@ export const DecisionCategoryView: React.FC<{
       return noop;
     }
 
-    setEating(false);
-    const id = requestAnimationFrame(() => setEating(true));
+    // use double rAF to prevent the latest decision
+    // from continuing the last animation when you made decision so quickly
+    // (any better way?)
+    let id = requestAnimationFrame(() => {
+      setEating(false);
+      id = requestAnimationFrame(() => setEating(true));
+    });
     return () => cancelAnimationFrame(id);
   }, [decidedCandidate]);
 
