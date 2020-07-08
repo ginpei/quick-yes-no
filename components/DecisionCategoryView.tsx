@@ -40,7 +40,7 @@ export const DecisionCategoryView: React.FC<{
   const style: CSSProperties = useMemo(
     () =>
       cssVar({
-        '--CategoryView-eatDuration': `${2.5 * config.duration}ms`,
+        '--CategoryView-eatDuration': `${2 * config.duration}ms`,
         '--CategoryView-left': `${layout.x}px`,
         '--CategoryView-top': `${layout.y}px`,
         '--CategoryView-width': `${layout.width}px`,
