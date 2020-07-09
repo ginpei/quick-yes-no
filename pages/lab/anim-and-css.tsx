@@ -1,7 +1,7 @@
-import { useCallback, useState, useMemo, CSSProperties } from 'react';
+import { CSSProperties, useCallback, useMemo, useState } from 'react';
+import { cssVar } from '../../src/util/cssVar';
+import { jcn } from '../../src/util/joinClassNames';
 import styles from './anim-and-css.module.scss';
-import { cssVar } from '../../util/cssVar';
-import { jcn } from '../../util/joinClassNames';
 
 const colorDefinitions = Object.freeze({
   p0: [

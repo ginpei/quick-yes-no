@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { Candidate } from '../models/Candidate';
 import { config } from '../models/Config';
-import { Pos, subtractPos } from '../models/Length';
+import { Pos } from '../models/Length';
 import { cssVar } from '../util/cssVar';
 import { CandidateImage } from './CandidateImage';
 import styles from './DecisionCategoryView.module.scss';

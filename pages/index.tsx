@@ -1,11 +1,11 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
-import { DecisionFlicker, OnDecide } from '../components/DecisionFlicker';
-import { Candidate, decomojiCandidates } from '../models/Candidate';
-import { Category, decomojiCategories } from '../models/Category';
-import { config } from '../models/Config';
-import { randomizeArray } from '../util/randomizeArray';
+import { DecisionFlicker, OnDecide } from '../src/components/DecisionFlicker';
+import { Candidate, decomojiCandidates } from '../src/models/Candidate';
+import { Category, decomojiCategories } from '../src/models/Category';
+import { config } from '../src/models/Config';
+import { randomizeArray } from '../src/util/randomizeArray';
 
 interface PageProps {
   candidates: Candidate[];

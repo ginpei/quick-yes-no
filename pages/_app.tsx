@@ -1,5 +1,5 @@
 import { AppProps } from 'next/app';
-import { initializeFirebase } from '../models/firebase';
+import { initializeFirebase } from '../src/models/firebase';
 import './styles.scss';
 
 initializeFirebase();
