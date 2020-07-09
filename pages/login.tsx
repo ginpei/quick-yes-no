@@ -2,6 +2,7 @@
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { BasicLayout } from '../src/components/BasicLayout';
 import { useFirebaseAuth } from '../src/hooks/useFirebaseAuth';
@@ -66,6 +67,11 @@ const LoginPage: React.FC = () => {
   return (
     <BasicLayout className="LoginPage">
       <h1>Login</h1>
+      <p>
+        <Link href="/">
+          <a>Back to Home</a>
+        </Link>
+      </p>
       {errorMessage && <p style={{ color: 'tomato' }}>{errorMessage}</p>}
       {user ? (
         <>
