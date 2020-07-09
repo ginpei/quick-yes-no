@@ -4,6 +4,6 @@ import './styles.scss';
 
 initializeFirebase();
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return <Component {...pageProps} />;
 }
