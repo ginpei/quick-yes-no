@@ -1,0 +1,7 @@
+module.exports = {
+  env: {
+    APP_FIREBASE_API_KEY: process.env.APP_FIREBASE_API_KEY,
+    APP_FIREBASE_AUTH_DOMAIN: process.env.APP_FIREBASE_AUTH_DOMAIN,
+    APP_FIREBASE_PROJECT_ID: process.env.APP_FIREBASE_PROJECT_ID,
+  },
+};

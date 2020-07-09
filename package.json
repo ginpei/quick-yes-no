@@ -11,6 +11,7 @@
     "tw": "jest --watch"
   },
   "dependencies": {
+    "firebase": "^7.15.5",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -29,6 +30,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "firebase-tools": "^8.5.0",
     "jest": "^26.1.0",
     "jest-transform-stub": "^2.0.0",
     "prettier": "^2.0.5",
