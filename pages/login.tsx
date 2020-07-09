@@ -2,10 +2,11 @@
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { BasicLayout } from '../src/components/BasicLayout';
-import { sleep } from '../src/util/sleep';
+import { useFirebaseAuth } from '../src/hooks/useFirebaseAuth';
 import { initializeFirebase } from '../src/models/firebase';
+import { sleep } from '../src/util/sleep';
 
 const dummyEmail = 'yesno-demo@example.com';
 const dummyPassword = '8*6KzqW3pdxBYyT!erE2FDrrP97';
@@ -105,15 +106,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-
-function useFirebaseAuth(auth: firebase.auth.Auth) {
-  const [ready, setReady] = useState(false);
-  const [user, setUser] = useState(auth.currentUser);
-
-  const unsubscribe = auth.onAuthStateChanged((newUser) => {
-    setReady(true);
-    setUser(newUser);
-  });
-
-  return [user, ready, unsubscribe];
-}
