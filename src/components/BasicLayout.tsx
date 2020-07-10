@@ -1,7 +1,7 @@
-import { HTMLProps } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { jcn } from '../util/joinClassNames';
 
-export const BasicLayout: React.FC<HTMLProps<'div'>> = (props) => {
+export const BasicLayout: React.FC<ComponentPropsWithRef<'div'>> = (props) => {
   const { children, className, ...restProps } = props;
 
   return (
