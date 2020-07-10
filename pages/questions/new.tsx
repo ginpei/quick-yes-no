@@ -3,16 +3,16 @@ import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { BasicLayout } from '../../src/components/BasicLayout';
 import {
-  DecisionCallback,
-  DecisionForm,
-} from '../../src/components/DecisionForm';
+  QuestionCallback,
+  QuestionForm,
+} from '../../src/components/QuestionForm';
 import { useFirebaseAuth } from '../../src/hooks/useFirebaseAuth';
 import {
-  createDecision,
-  Decision,
-  saveDecision,
-  getDecisionPath,
-} from '../../src/models/Decision';
+  createQuestion,
+  Question,
+  saveQuestion,
+  getQuestionPath,
+} from '../../src/models/Question';
 import { initializeFirebase } from '../../src/models/firebase';
 import { sleep } from '../../src/util/sleep';
 
@@ -20,23 +20,23 @@ initializeFirebase();
 const auth = firebase.auth();
 const fs = firebase.firestore();
 
-const NewDecisionPage: React.FC = () => {
-  const [decision, setDecision] = useState(createDecision());
+const NewQuestionPage: React.FC = () => {
+  const [question, setQuestion] = useState(createQuestion());
   const [formDisabled, setFormDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [user, userReady] = useFirebaseAuth(auth);
 
-  const onDecisionChange: DecisionCallback = useCallback(
-    (newDecision: Decision) => {
-      setDecision(newDecision);
+  const onQuestionChange: QuestionCallback = useCallback(
+    (newQuestion: Question) => {
+      setQuestion(newQuestion);
     },
     []
   );
 
-  const onDecisionSubmit: DecisionCallback = useCallback(
-    async (newDecision: Decision) => {
-      setDecision(newDecision);
+  const onQuestionSubmit: QuestionCallback = useCallback(
+    async (newQuestion: Question) => {
+      setQuestion(newQuestion);
       setFormDisabled(true);
       setErrorMessage('');
 
@@ -46,17 +46,17 @@ const NewDecisionPage: React.FC = () => {
           throw new Error('You must log in');
         }
 
-        const [savedDecision] = await Promise.all([
-          saveDecision(fs, { ...newDecision, userId }),
+        const [savedQuestion] = await Promise.all([
+          saveQuestion(fs, { ...newQuestion, userId }),
           sleep(500),
         ]);
 
-        setDecision(savedDecision);
+        setQuestion(savedQuestion);
 
-        const url = getDecisionPath(savedDecision);
+        const url = getQuestionPath(savedQuestion);
         window.location.replace(url.as);
       } catch (error) {
-        console.log('Decision', newDecision);
+        console.log('Question', newQuestion);
         console.error(error);
         setErrorMessage(error?.message ?? 'Unknown error');
         setFormDisabled(false);
@@ -84,16 +84,16 @@ const NewDecisionPage: React.FC = () => {
 
   return (
     <BasicLayout>
-      <h1>NewDecisionPage</h1>
+      <h1>NewQuestionPage</h1>
       {errorMessage && <p className="errorMessage">{errorMessage}</p>}
-      <DecisionForm
+      <QuestionForm
         disabled={formDisabled}
-        decision={decision}
-        onChange={onDecisionChange}
-        onSubmit={onDecisionSubmit}
+        question={question}
+        onChange={onQuestionChange}
+        onSubmit={onQuestionSubmit}
       />
     </BasicLayout>
   );
 };
 
-export default NewDecisionPage;
+export default NewQuestionPage;

@@ -1,27 +1,27 @@
-import { useCallback, useState } from 'react';
-import { Decision } from '../models/Decision';
+import { useCallback } from 'react';
+import { Question } from '../models/Question';
 import { Button, FormInputRow, OnFormInputRowChange } from './FormUI';
 import { JsonInputRow, OnJsonInputChange } from './JsonInput';
 
-export type DecisionCallback = (decision: Decision) => void;
+export type QuestionCallback = (question: Question) => void;
 
-export const DecisionForm: React.FC<{
-  decision: Decision;
+export const QuestionForm: React.FC<{
+  question: Question;
   disabled: boolean;
-  onChange: DecisionCallback;
-  onSubmit: DecisionCallback;
-}> = ({ decision, disabled, onChange, onSubmit }) => {
+  onChange: QuestionCallback;
+  onSubmit: QuestionCallback;
+}> = ({ question, disabled, onChange, onSubmit }) => {
   const onFormSubmit = useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
-      onSubmit(decision);
+      onSubmit(question);
     },
-    [onSubmit, decision]
+    [onSubmit, question]
   );
 
   const onInputChange: OnFormInputRowChange = useCallback(
     (event, name, value) => {
-      onChange({ ...decision, [name]: value });
+      onChange({ ...question, [name]: value });
     },
     [onChange]
   );
@@ -32,36 +32,36 @@ export const DecisionForm: React.FC<{
         return;
       }
 
-      onChange({ ...decision, [name]: value as any });
+      onChange({ ...question, [name]: value as any });
     },
     [onChange]
   );
 
   return (
-    <form className="DecisionForm" onSubmit={onFormSubmit}>
+    <form className="QuestionForm" onSubmit={onFormSubmit}>
       <FormInputRow
         disabled={disabled}
         label="Title"
         name="title"
         onChange={onInputChange}
-        value={decision.title}
+        value={question.title}
       />
       <JsonInputRow
         disabled={disabled}
         label="Candidates (JSON)"
         name="candidates"
         onChange={onJsonChange}
-        value={decision.candidates}
+        value={question.candidates}
       />
       <JsonInputRow
         disabled={disabled}
         label="Categories (JSON)"
         name="categories"
         onChange={onJsonChange}
-        value={decision.categories}
+        value={question.categories}
       />
       <p>
-        <Button disabled={disabled}>{decision.id ? 'Create' : 'Update'}</Button>
+        <Button disabled={disabled}>{question.id ? 'Create' : 'Update'}</Button>
       </p>
     </form>
   );
