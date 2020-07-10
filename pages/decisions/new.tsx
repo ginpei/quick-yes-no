@@ -11,6 +11,7 @@ import {
   createDecision,
   Decision,
   saveDecision,
+  getDecisionPath,
 } from '../../src/models/Decision';
 import { initializeFirebase } from '../../src/models/firebase';
 import { sleep } from '../../src/util/sleep';
@@ -51,15 +52,17 @@ const NewDecisionPage: React.FC = () => {
         ]);
 
         setDecision(savedDecision);
+
+        const url = getDecisionPath(savedDecision);
+        window.location.replace(url.as);
       } catch (error) {
         console.log('Decision', newDecision);
         console.error(error);
         setErrorMessage(error?.message ?? 'Unknown error');
-      } finally {
         setFormDisabled(false);
       }
     },
-    []
+    [user]
   );
 
   if (!userReady) {

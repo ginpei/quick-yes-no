@@ -10,6 +10,8 @@ export interface Decision {
   userId: string;
 }
 
+export type DecisionAction = 'new' | 'index' | 'view' | 'update' | 'delete';
+
 export function createDecision(initial?: Partial<Decision>): Decision {
   return {
     title: '',
@@ -19,6 +21,24 @@ export function createDecision(initial?: Partial<Decision>): Decision {
     userId: '',
     ...initial,
   };
+}
+
+export function getDecisionPath(
+  decision: Decision | null,
+  action: DecisionAction = 'view'
+): { as: string; href: string } {
+  if (!decision) {
+    return { as: '/decisions/new', href: '/decisions/new' };
+  }
+
+  const hrefBase = '/decisions/[decisionId]/';
+  const asBase = `/decisions/${decision.id}/`;
+
+  if (action === 'view') {
+    return { as: asBase, href: hrefBase };
+  }
+
+  return { as: `${asBase}${action}`, href: `${hrefBase}${action}` };
 }
 
 export async function saveDecision(
