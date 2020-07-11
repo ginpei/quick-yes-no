@@ -7,24 +7,17 @@ import {
   QuestionCallback,
   QuestionForm,
 } from '../../../src/components/QuestionForm';
-import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
 import { initializeFirebase } from '../../../src/models/firebase';
 import {
   getQuestionPath,
   Question,
   saveQuestion,
-  useLatestQuestion,
 } from '../../../src/models/Question';
-import ErrorPage from '../../../src/screens/ErrorPage';
-import LoadingPage from '../../../src/screens/LoadingPage';
-import NeedLoginPage from '../../../src/screens/NeedLoginPage';
-import NotFoundPage from '../../../src/screens/NotFoundPage';
-import { sleep } from '../../../src/util/sleep';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
+import { sleep } from '../../../src/util/sleep';
 
 initializeFirebase();
 const fs = firebase.firestore();
-const auth = firebase.auth();
 
 const QuestionEditPage: React.FC = () => {
   const router = useRouter();
