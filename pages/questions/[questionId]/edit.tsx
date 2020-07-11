@@ -20,6 +20,7 @@ import LoadingPage from '../../../src/screens/LoadingPage';
 import NeedLoginPage from '../../../src/screens/NeedLoginPage';
 import NotFoundPage from '../../../src/screens/NotFoundPage';
 import { sleep } from '../../../src/util/sleep';
+import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
 
 initializeFirebase();
 const fs = firebase.firestore();
@@ -31,16 +32,7 @@ const QuestionEditPage: React.FC = () => {
 
   const [formDisabled, setFormDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [user, userReady] = useFirebaseAuth(auth);
-
-  if (questionId instanceof Array) {
-    throw new Error('Invalid parameter "questionId"');
-  }
-
-  const [initialQuestion, questionReady, questionError] = useLatestQuestion(
-    fs,
-    (userReady && questionId) || ''
-  );
+  const [el, initialQuestion, user] = useQuestionPagePrep(questionId);
 
   const onQuestionSubmit: QuestionCallback = useCallback(
     async (newQuestion: Question) => {
@@ -70,20 +62,8 @@ const QuestionEditPage: React.FC = () => {
     [user]
   );
 
-  if (typeof questionId !== 'string' || !questionReady || !userReady) {
-    return <LoadingPage />;
-  }
-
-  if (!user) {
-    return <NeedLoginPage />;
-  }
-
-  if (questionError) {
-    return <ErrorPage error={questionError} />;
-  }
-
-  if (!initialQuestion) {
-    return <NotFoundPage />;
+  if (!initialQuestion || !user) {
+    return el;
   }
 
   return (

@@ -1,50 +1,17 @@
-import firebase from 'firebase/app';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
 import { BasicLayout } from '../../../src/components/BasicLayout';
-import { initializeFirebase } from '../../../src/models/firebase';
-import {
-  getQuestionPath,
-  useLatestQuestion,
-} from '../../../src/models/Question';
-import ErrorPage from '../../../src/screens/ErrorPage';
-import LoadingPage from '../../../src/screens/LoadingPage';
-import NotFoundPage from '../../../src/screens/NotFoundPage';
-import NeedLoginPage from '../../../src/screens/NeedLoginPage';
-import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
-
-initializeFirebase();
-const fs = firebase.firestore();
-const auth = firebase.auth();
+import { getQuestionPath } from '../../../src/models/Question';
+import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
 
 const QuestionViewPage: React.FC = () => {
   const router = useRouter();
   const { questionId } = router.query;
-  const [user, userReady] = useFirebaseAuth(auth);
 
-  if (questionId instanceof Array) {
-    throw new Error('Invalid parameter "questionId"');
-  }
-
-  const [question, questionReady, questionError] = useLatestQuestion(
-    fs,
-    questionId || ''
-  );
-
-  if (typeof questionId !== 'string' || !questionReady || !userReady) {
-    return <LoadingPage />;
-  }
-
-  if (!user) {
-    return <NeedLoginPage />;
-  }
-
-  if (questionError) {
-    return <ErrorPage error={questionError} />;
-  }
+  const [el, question] = useQuestionPagePrep(questionId);
 
   if (!question) {
-    return <NotFoundPage />;
+    return el;
   }
 
   return (
