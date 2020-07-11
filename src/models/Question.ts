@@ -1,5 +1,6 @@
-import { firestore } from 'firebase';
-import { useState, useEffect } from 'react';
+import { firestore } from 'firebase/app';
+import { useEffect, useState } from 'react';
+import { zeroTimestamp } from '../util/timestamp';
 import { Candidate } from './Candidate';
 import { Category } from './Category';
 
@@ -8,6 +9,8 @@ export interface Question {
   id: string;
   candidates: Candidate[];
   categories: Category[];
+  createdAt: firebase.firestore.Timestamp;
+  updatedAt: firebase.firestore.Timestamp;
   userId: string;
 }
 
@@ -19,6 +22,8 @@ export function createQuestion(initial?: Partial<Question>): Question {
     id: '',
     candidates: [],
     categories: [],
+    createdAt: zeroTimestamp,
+    updatedAt: zeroTimestamp,
     userId: '',
     ...initial,
   };
@@ -52,19 +57,26 @@ export async function saveQuestion(
   const coll = getCollection(fs);
 
   if (question.id) {
-    await coll.doc(question.id).set(question);
+    await coll.doc(question.id).set({
+      ...question,
+      updatedAt: firestore.Timestamp.now(),
+    });
     return question;
   }
 
-  const refQuestion = await coll.add(question);
-  return { ...question, id: refQuestion.id };
+  const refQuestion = await coll.add({
+    ...question,
+    createdAt: firestore.Timestamp.now(),
+    updatedAt: firestore.Timestamp.now(),
+  });
+  return ssToQuestion(await refQuestion.get());
 }
 
 export async function getLatestQuestions(
   fs: firestore.Firestore
 ): Promise<Question[]> {
   const coll = getCollection(fs);
-  const snapshot = await coll.get();
+  const snapshot = await coll.orderBy('createdAt', 'desc').get();
   const questions = snapshot.docs.map((v) => ssToQuestion(v));
   return questions;
 }
