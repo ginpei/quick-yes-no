@@ -23,7 +23,7 @@ export const QuestionForm: React.FC<{
     (event, name, value) => {
       onChange({ ...question, [name]: value });
     },
-    [onChange]
+    [onChange, question]
   );
 
   const onJsonChange: OnJsonInputChange = useCallback(
@@ -34,7 +34,7 @@ export const QuestionForm: React.FC<{
 
       onChange({ ...question, [name]: value as any });
     },
-    [onChange]
+    [onChange, question]
   );
 
   return (
