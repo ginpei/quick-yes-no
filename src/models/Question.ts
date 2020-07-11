@@ -1,16 +1,13 @@
 import { firestore } from 'firebase/app';
 import { useEffect, useState } from 'react';
-import { zeroTimestamp } from '../util/timestamp';
 import { Candidate } from './Candidate';
 import { Category } from './Category';
+import { createDbRecord, DbRecord, setTimestamps } from './DbRecord';
 
-export interface Question {
+export interface Question extends DbRecord {
   title: string;
-  id: string;
   candidates: Candidate[];
   categories: Category[];
-  createdAt: firebase.firestore.Timestamp;
-  updatedAt: firebase.firestore.Timestamp;
   userId: string;
 }
 
@@ -19,12 +16,10 @@ export type QuestionAction = 'new' | 'index' | 'view' | 'edit' | 'delete';
 export function createQuestion(initial?: Partial<Question>): Question {
   return {
     title: '',
-    id: '',
     candidates: [],
     categories: [],
-    createdAt: zeroTimestamp,
-    updatedAt: zeroTimestamp,
     userId: '',
+    ...createDbRecord(),
     ...initial,
   };
 }
@@ -56,19 +51,14 @@ export async function saveQuestion(
 ): Promise<Question> {
   const coll = getCollection(fs);
 
-  if (question.id) {
-    await coll.doc(question.id).set({
-      ...question,
-      updatedAt: firestore.Timestamp.now(),
-    });
-    return question;
+  const presentQuestion = setTimestamps(question);
+
+  if (presentQuestion.id) {
+    await coll.doc(presentQuestion.id).set(presentQuestion);
+    return presentQuestion;
   }
 
-  const refQuestion = await coll.add({
-    ...question,
-    createdAt: firestore.Timestamp.now(),
-    updatedAt: firestore.Timestamp.now(),
-  });
+  const refQuestion = await coll.add(presentQuestion);
   return ssToQuestion(await refQuestion.get());
 }
 
