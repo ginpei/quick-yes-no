@@ -61,7 +61,7 @@ export const QuestionForm: React.FC<{
         value={question.categories}
       />
       <p>
-        <Button disabled={disabled}>{question.id ? 'Create' : 'Update'}</Button>
+        <Button disabled={disabled}>{question.id ? 'Update' : 'Create'}</Button>
       </p>
     </form>
   );
