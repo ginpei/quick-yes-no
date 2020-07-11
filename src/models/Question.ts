@@ -69,6 +69,20 @@ export async function getLatestQuestions(
   return questions;
 }
 
+export async function getLatestQuestion(
+  fs: firestore.Firestore,
+  id: string
+): Promise<Question | null> {
+  const coll = getCollection(fs);
+  const snapshot = await coll.doc(id).get();
+  if (!snapshot.exists) {
+    return null;
+  }
+
+  const question = ssToQuestion(snapshot);
+  return question;
+}
+
 /**
  * Returns the latest question at the moment.
  */
@@ -83,9 +97,30 @@ export function useLatestQuestions(
       setQuestions(v);
       setReady(true);
     });
-  }, []);
+  }, [fs]);
 
   return [questions, ready];
+}
+
+export function useLatestQuestion(
+  fs: firestore.Firestore,
+  id: string
+): [Question | null, boolean] {
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    getLatestQuestion(fs, id).then((result) => {
+      setQuestion(result);
+      setReady(true);
+    });
+  }, [fs, id]);
+
+  return [question, ready];
 }
 
 function getCollection(
@@ -95,8 +130,11 @@ function getCollection(
 }
 
 function ssToQuestion(
-  obj: firestore.QueryDocumentSnapshot<firestore.DocumentData>
+  obj:
+    | firestore.QueryDocumentSnapshot<firestore.DocumentData>
+    | firestore.DocumentSnapshot<firestore.DocumentData>
 ): Question {
+  // TODO implement
   const question = { ...(obj.data() as any), id: obj.id };
   return question;
 }
