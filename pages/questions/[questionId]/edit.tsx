@@ -15,10 +15,11 @@ import {
   saveQuestion,
   useLatestQuestion,
 } from '../../../src/models/Question';
+import ErrorPage from '../../../src/screens/ErrorPage';
 import LoadingPage from '../../../src/screens/LoadingPage';
+import NeedLoginPage from '../../../src/screens/NeedLoginPage';
 import NotFoundPage from '../../../src/screens/NotFoundPage';
 import { sleep } from '../../../src/util/sleep';
-import ErrorPage from '../../../src/screens/ErrorPage';
 
 initializeFirebase();
 const fs = firebase.firestore();
@@ -71,6 +72,10 @@ const QuestionEditPage: React.FC = () => {
 
   if (typeof questionId !== 'string' || !questionReady || !userReady) {
     return <LoadingPage />;
+  }
+
+  if (!user) {
+    return <NeedLoginPage />;
   }
 
   if (questionError) {

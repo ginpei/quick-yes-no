@@ -10,13 +10,17 @@ import {
 import ErrorPage from '../../../src/screens/ErrorPage';
 import LoadingPage from '../../../src/screens/LoadingPage';
 import NotFoundPage from '../../../src/screens/NotFoundPage';
+import NeedLoginPage from '../../../src/screens/NeedLoginPage';
+import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
 
 initializeFirebase();
 const fs = firebase.firestore();
+const auth = firebase.auth();
 
 const QuestionViewPage: React.FC = () => {
   const router = useRouter();
   const { questionId } = router.query;
+  const [user, userReady] = useFirebaseAuth(auth);
 
   if (questionId instanceof Array) {
     throw new Error('Invalid parameter "questionId"');
@@ -27,8 +31,12 @@ const QuestionViewPage: React.FC = () => {
     questionId || ''
   );
 
-  if (typeof questionId !== 'string' || !questionReady) {
+  if (typeof questionId !== 'string' || !questionReady || !userReady) {
     return <LoadingPage />;
+  }
+
+  if (!user) {
+    return <NeedLoginPage />;
   }
 
   if (questionError) {

@@ -15,6 +15,7 @@ import {
 } from '../../src/models/Question';
 import { initializeFirebase } from '../../src/models/firebase';
 import { sleep } from '../../src/util/sleep';
+import NeedLoginPage from '../../src/screens/NeedLoginPage';
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -70,16 +71,7 @@ const NewQuestionPage: React.FC = () => {
   }
 
   if (!user) {
-    return (
-      <BasicLayout>
-        <h1>Need to login</h1>
-        <p>
-          <Link href="/login">
-            <a>Log in</a>
-          </Link>
-        </p>
-      </BasicLayout>
-    );
+    return <NeedLoginPage />;
   }
 
   return (
