@@ -43,6 +43,15 @@ const QuestionViewPage: React.FC = () => {
     <BasicLayout className="ui-container QuestionViewPage">
       <h1>{question.title || '(No title)'}</h1>
       <p>
+        <Link {...getQuestionPath(null)}>
+          <a>Index</a>
+        </Link>
+        {' | '}
+        <Link {...getQuestionPath(question, 'edit')}>
+          <a>Edit</a>
+        </Link>
+      </p>
+      <p>
         <code>{questionId}</code>
       </p>
     </BasicLayout>

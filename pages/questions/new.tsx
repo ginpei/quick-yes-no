@@ -85,6 +85,11 @@ const NewQuestionPage: React.FC = () => {
   return (
     <BasicLayout>
       <h1>NewQuestionPage</h1>
+      <p>
+        <Link {...getQuestionPath(null)}>
+          <a>Index</a>
+        </Link>
+      </p>
       {errorMessage && <p className="errorMessage">{errorMessage}</p>}
       <QuestionForm
         disabled={formDisabled}

@@ -16,6 +16,9 @@ const QuestionIndexPage: React.FC = () => {
   return (
     <div className="ui-container QuestionIndexPage">
       <h1>QuestionIndexPage</h1>
+      <Link {...getQuestionPath(null, 'new')}>
+        <a>New</a>
+      </Link>
       {questionsReady ? (
         <>
           {questions.length < 1 && <p>(No items found)</p>}

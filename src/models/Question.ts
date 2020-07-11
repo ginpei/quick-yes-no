@@ -11,7 +11,7 @@ export interface Question {
   userId: string;
 }
 
-export type QuestionAction = 'new' | 'index' | 'view' | 'update' | 'delete';
+export type QuestionAction = 'new' | 'index' | 'view' | 'edit' | 'delete';
 
 export function createQuestion(initial?: Partial<Question>): Question {
   return {
