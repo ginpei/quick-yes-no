@@ -105,22 +105,29 @@ export function useLatestQuestions(
 export function useLatestQuestion(
   fs: firestore.Firestore,
   id: string
-): [Question | null, boolean] {
+): [Question | null, boolean, Error | null] {
   const [question, setQuestion] = useState<Question | null>(null);
   const [ready, setReady] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!id) {
       return;
     }
 
-    getLatestQuestion(fs, id).then((result) => {
-      setQuestion(result);
-      setReady(true);
-    });
+    setError(null);
+    getLatestQuestion(fs, id)
+      .then((result) => {
+        setQuestion(result);
+        setReady(true);
+      })
+      .catch((e) => {
+        setReady(true);
+        setError(e);
+      });
   }, [fs, id]);
 
-  return [question, ready];
+  return [question, ready, error];
 }
 
 function getCollection(

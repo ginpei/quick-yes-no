@@ -1,8 +1,13 @@
 import firebase from 'firebase/app';
 import { useRouter } from 'next/dist/client/router';
+import Link from 'next/link';
 import { BasicLayout } from '../../../src/components/BasicLayout';
 import { initializeFirebase } from '../../../src/models/firebase';
-import { useLatestQuestion } from '../../../src/models/Question';
+import {
+  getQuestionPath,
+  useLatestQuestion,
+} from '../../../src/models/Question';
+import ErrorPage from '../../../src/screens/ErrorPage';
 import LoadingPage from '../../../src/screens/LoadingPage';
 import NotFoundPage from '../../../src/screens/NotFoundPage';
 
@@ -17,10 +22,17 @@ const QuestionViewPage: React.FC = () => {
     throw new Error('Invalid parameter "questionId"');
   }
 
-  const [question, questionReady] = useLatestQuestion(fs, questionId || '');
+  const [question, questionReady, questionError] = useLatestQuestion(
+    fs,
+    questionId || ''
+  );
 
   if (typeof questionId !== 'string' || !questionReady) {
     return <LoadingPage />;
+  }
+
+  if (questionError) {
+    return <ErrorPage error={questionError} />;
   }
 
   if (!question) {
