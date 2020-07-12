@@ -65,7 +65,7 @@ export function useAnswersOf(
       setAnswer(v);
       setReady(true);
     });
-  }, [fs]);
+  }, [fs, questionId]);
 
   return [answers, ready];
 }
