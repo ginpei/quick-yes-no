@@ -26,7 +26,7 @@ export const decomojiCategories: Category[] = [
   },
 ];
 
-export function createCategory(initial: Partial<Category>): Category {
+export function createCategory(initial?: Partial<Category>): Category {
   return {
     description: '',
     name: '',

@@ -605,3 +605,11 @@ export const decomojiCandidates: Candidate[] = [
     name: 'zikokaiketu',
   },
 ];
+
+export function createCandidate(initial?: Partial<Candidate>): Candidate {
+  return {
+    image: '',
+    name: '',
+    ...initial,
+  };
+}

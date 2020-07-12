@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import { OnDecide } from '../../src/components/DecisionFlicker';
-import { DecisionForm } from '../../src/components/DecisionForm';
+import { InteractiveAnswerForm } from '../../src/components/InteractiveAnswerForm';
 import {
   QuestionCallback,
   QuestionForm,
@@ -45,7 +45,7 @@ const DecisionFlickerDemoPage: React.FC = () => {
       />
       <h2>(2/2) Make a decision for the question</h2>
       {activeQuestion ? (
-        <DecisionForm onDecide={onDecide} question={activeQuestion} />
+        <InteractiveAnswerForm onDecide={onDecide} question={activeQuestion} />
       ) : (
         <p>No question is activated</p>
       )}

@@ -1,19 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Candidate } from '../models/Candidate';
-import { Category } from '../models/Category';
 import { Question } from '../models/Question';
 import { DecisionFlicker, OnDecide } from './DecisionFlicker';
-
-// TODO extract
-export interface Decision {
-  candidate: Candidate;
-  category: Category;
-}
 
 /**
  * Stateful component of `DecisionFlicker`.
  */
-export const DecisionForm: React.FC<{
+export const InteractiveAnswerForm: React.FC<{
   onDecide?: OnDecide;
   question: Question;
 }> = ({ onDecide, question }) => {
