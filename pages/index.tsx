@@ -1,90 +1,17 @@
-import { GetServerSideProps } from 'next';
-import Head from 'next/head';
-import { useCallback, useEffect, useState } from 'react';
-import { DecisionFlicker, OnDecide } from '../src/components/DecisionFlicker';
-import { Candidate, decomojiCandidates } from '../src/models/Candidate';
-import { Category, decomojiCategories } from '../src/models/Category';
-import { config } from '../src/models/Config';
-import { randomizeArray } from '../src/util/randomizeArray';
+import Link from 'next/link';
+import { BasicLayout } from '../src/components/BasicLayout';
 
-interface PageProps {
-  candidates: Candidate[];
-  categories: Category[];
-}
-
-interface Decision {
-  candidate: Candidate;
-  category: Category;
-}
-
-const HomePage: React.FC<PageProps> = ({ candidates, categories }) => {
-  const [current, setCurrent] = useState<Candidate | null>(candidates[0]);
-  const [recent, setRecent] = useState<Decision | null>(null);
-  const [restCandidates, setRestCandidates] = useState(candidates.slice(1));
-  const [width, setWidth] = useState(0);
-
-  const onDecide: OnDecide = useCallback(
-    ({ candidate, category }) => {
-      setRecent({ candidate, category });
-
-      const next = restCandidates[0] || null;
-      setCurrent(next);
-      setRestCandidates(restCandidates.slice(1));
-    },
-    [restCandidates]
-  );
-
-  useEffect(() => {
-    const maxWidth = 800;
-    const fn = () =>
-      setWidth(
-        Math.min(
-          maxWidth,
-          document.documentElement.clientWidth,
-          document.documentElement.clientHeight * 0.7
-        )
-      );
-    fn();
-    window.addEventListener('resize', fn);
-    return () => window.removeEventListener('resize', fn);
-  }, []);
-
+const HomePage: React.FC = () => {
   return (
-    <div className="ui-container HomePage">
-      <Head>
-        <title>Home Page</title>
-        <meta
-          name="viewport"
-          content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"
-        />
-        <style>{`
-          :root {
-            --duration: ${config.duration}ms;
-          }
-        `}</style>
-      </Head>
-      <h1>Decomoji List</h1>
+    <BasicLayout>
+      <h1>Quick Yes No</h1>
       <p>
-        {(current ? 1 : 0) + restCandidates.length} / {candidates.length}
-        <br />
-        {recent ? `${recent.candidate.name} → ${recent.category.name}` : '.'}
+        <Link href="/questions">
+          <a>Questions</a>
+        </Link>
       </p>
-      <DecisionFlicker
-        candidate={current}
-        categories={categories}
-        onDecide={onDecide}
-        restCandidates={restCandidates}
-        width={width}
-      />
-    </div>
+    </BasicLayout>
   );
 };
 
 export default HomePage;
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async () => ({
-  props: {
-    candidates: randomizeArray(decomojiCandidates),
-    categories: decomojiCategories,
-  },
-});
