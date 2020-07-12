@@ -18,11 +18,20 @@ export const JsonInputRow: React.FC<
   Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'> & {
     label: string;
     onChange: OnJsonInputChange;
+    replacer?: Parameters<JSON['stringify']>[1];
+    space?: Parameters<JSON['stringify']>[2];
     value: Record<string, unknown> | unknown[];
   }
 > = (props) => {
-  const { label, onChange, value, ...textareaProps } = props;
-  const [json, setJson] = useState(JSON.stringify(value));
+  const {
+    label,
+    onChange,
+    replacer,
+    space = 2,
+    value,
+    ...textareaProps
+  } = props;
+  const [json, setJson] = useState(JSON.stringify(value, replacer, space));
   const [errorMessage, setErrorMessage] = useState('');
 
   const onJsonChange = useCallback(
