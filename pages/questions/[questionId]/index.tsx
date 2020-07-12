@@ -8,7 +8,10 @@ import { OnDecide } from '../../../src/components/DecisionFlicker';
 import { InteractiveAnswerForm } from '../../../src/components/InteractiveAnswerForm';
 import { createAnswer, saveAnswer } from '../../../src/models/Answer';
 import { initializeFirebase } from '../../../src/models/firebase';
-import { getQuestionPath } from '../../../src/models/Question';
+import {
+  getQuestionPath,
+  isQuestionAuthor,
+} from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
 
 initializeFirebase();
@@ -56,10 +59,14 @@ const QuestionViewPage: React.FC = () => {
         <Link {...getQuestionPath(question, 'details')}>
           <a>Details</a>
         </Link>
-        {' | '}
-        <Link {...getQuestionPath(question, 'edit')}>
-          <a>Edit</a>
-        </Link>
+        {isQuestionAuthor(question, user) && (
+          <>
+            {' | '}
+            <Link {...getQuestionPath(question, 'edit')}>
+              <a>Edit</a>
+            </Link>
+          </>
+        )}
       </p>
       {errorMessage && <p>{errorMessage}</p>}
       <InteractiveAnswerForm onDecide={onDecide} question={question} />

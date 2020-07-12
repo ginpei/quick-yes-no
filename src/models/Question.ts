@@ -1,4 +1,4 @@
-import { firestore } from 'firebase/app';
+import { firestore, User } from 'firebase/app';
 import { useEffect, useState } from 'react';
 import { Candidate } from './Candidate';
 import { Category } from './Category';
@@ -49,6 +49,13 @@ export function getQuestionPath(
   }
 
   return { as: `${asBase}${action}`, href: `${hrefBase}${action}` };
+}
+
+export function isQuestionAuthor(
+  question: Question,
+  user: User | null | undefined
+): boolean {
+  return Boolean(user && question.userId === user.uid);
 }
 
 export async function saveQuestion(

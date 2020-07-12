@@ -12,9 +12,11 @@ import {
   getQuestionPath,
   Question,
   saveQuestion,
+  isQuestionAuthor,
 } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
 import { sleep } from '../../../src/util/sleep';
+import ErrorPage from '../../../src/screens/ErrorPage';
 
 initializeFirebase();
 const fs = firebase.firestore();
@@ -57,6 +59,10 @@ const QuestionEditPage: React.FC = () => {
 
   if (!initialQuestion || !user) {
     return el;
+  }
+
+  if (!isQuestionAuthor(initialQuestion, user)) {
+    return <ErrorPage error={new Error('Permission denied')} />;
   }
 
   return (
