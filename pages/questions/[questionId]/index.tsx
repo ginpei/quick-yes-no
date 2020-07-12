@@ -2,23 +2,29 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
+import { CandidateImage } from '../../../src/components/CandidateImage';
+import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
 import { Answer, useAnswersOf } from '../../../src/models/Answer';
+import { Candidate } from '../../../src/models/Candidate';
 import { initializeFirebase } from '../../../src/models/firebase';
 import {
   getQuestionPath,
-  Question,
   isQuestionAuthor,
+  Question,
 } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
 import ErrorPage from '../../../src/screens/ErrorPage';
 import LoadingPage from '../../../src/screens/LoadingPage';
-import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
+import styles from './index.module.scss';
 
 type Prep =
   | [JSX.Element]
   | [null, Question, Answer[], firebase.User | null, Error | null];
+
+type AnswerCounts = Map<string, number>;
+type AnswerMap = Map<string, AnswerCounts>;
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -33,6 +39,8 @@ const QuestionViewPage: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [el, question, answers, user, error] = usePrep(questionId);
+
+  const answerMap = useMemo(() => createAnswerMap(answers), [answers]);
 
   if (error) {
     return <ErrorPage error={error} />;
@@ -63,18 +71,49 @@ const QuestionViewPage: React.FC = () => {
         )}
       </p>
       {errorMessage && <p>{errorMessage}</p>}
-      <ul>
-        {answers.map((answer) => (
-          <li key={answer.id}>
-            {answer.candidate} → {answer.category}
-          </li>
-        ))}
-      </ul>
+      {question.candidates.map((candidate) => (
+        <CandidateItem
+          answerCounts={answerMap.get(candidate.name) ?? null}
+          candidate={candidate}
+          key={candidate.name}
+        />
+      ))}
     </BasicLayout>
   );
 };
 
 export default QuestionViewPage;
+
+const CandidateItem: React.FC<{
+  answerCounts: AnswerCounts | null;
+  candidate: Candidate;
+}> = ({ answerCounts, candidate }) => {
+  const answers: string = useMemo(() => {
+    const arr: [number, string][] = [];
+    if (!answerCounts) {
+      return '';
+    }
+
+    answerCounts.forEach((count, categoryName) => {
+      arr.push([count, `${categoryName} (${count})`]);
+    });
+
+    arr.sort(([c1], [c2]) => c1 - c2);
+    const result = arr.map(([, v]) => v).join(', ');
+    return result;
+  }, [answerCounts]);
+
+  return (
+    <div className={styles.CandidateItem}>
+      <CandidateImage candidate={candidate} width={16} />{' '}
+      <code>:{candidate.name}:</code>
+      <br />
+      {answers || (
+        <span className={styles.CandidateItem_noAnswers}>(No answers yet)</span>
+      )}
+    </div>
+  );
+};
 
 function usePrep(questionId: string | undefined): Prep {
   const [el, question] = useQuestionPagePrep(questionId);
@@ -94,4 +133,27 @@ function usePrep(questionId: string | undefined): Prep {
   }
 
   return [null, question, answers, user, answersError];
+}
+
+function createAnswerMap(answers: Answer[] | undefined): AnswerMap {
+  const map: AnswerMap = new Map();
+
+  if (!answers) {
+    return map;
+  }
+
+  answers.forEach(({ candidate, category }) => {
+    if (!map.has(candidate)) {
+      map.set(candidate, new Map());
+    }
+
+    const m = map.get(candidate);
+    if (!m) {
+      throw new Error();
+    }
+
+    m.set(category, m.get(category) || 0 + 1);
+  });
+
+  return map;
 }
