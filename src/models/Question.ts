@@ -142,11 +142,12 @@ export function useLatestQuestion(
     getLatestQuestion(fs, id)
       .then((result) => {
         setQuestion(result);
-        setReady(true);
       })
       .catch((e) => {
-        setReady(true);
         setError(e);
+      })
+      .finally(() => {
+        setReady(true);
       });
   }, [fs, id]);
 
