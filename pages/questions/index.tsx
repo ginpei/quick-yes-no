@@ -1,13 +1,13 @@
 import firebase from 'firebase/app';
 import Link from 'next/link';
+import { BasicLayout } from '../../src/components/BasicLayout';
+import { initializeFirebase } from '../../src/models/firebase';
 import {
-  Question,
   getQuestionPath,
+  Question,
   useLatestQuestions,
 } from '../../src/models/Question';
-import { initializeFirebase } from '../../src/models/firebase';
 import ErrorPage from '../../src/screens/ErrorPage';
-import { useFirebaseAuth } from '../../src/hooks/useFirebaseAuth';
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -21,7 +21,7 @@ const QuestionIndexPage: React.FC = () => {
   }
 
   return (
-    <div className="ui-container QuestionIndexPage">
+    <BasicLayout title="Questions">
       <h1>QuestionIndexPage</h1>
       <Link {...getQuestionPath(null, 'new')}>
         <a>New</a>
@@ -36,7 +36,7 @@ const QuestionIndexPage: React.FC = () => {
       ) : (
         <p>Loading...</p>
       )}
-    </div>
+    </BasicLayout>
   );
 };
 

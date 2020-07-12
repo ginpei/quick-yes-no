@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
 import { OnDecide } from '../../../src/components/DecisionFlicker';
 import { InteractiveAnswerForm } from '../../../src/components/InteractiveAnswerForm';
@@ -27,6 +27,7 @@ const QuestionViewPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [user, userReady] = useFirebaseAuth(auth);
   const [el, question] = useQuestionPagePrep(questionId);
+  const title = useMemo(() => question?.title || '(No title)', [question]);
 
   const onDecide: OnDecide = useCallback(
     async ({ candidate, category }) => {
@@ -57,7 +58,10 @@ const QuestionViewPage: React.FC = () => {
   }
 
   return (
-    <BasicLayout className="ui-container QuestionViewPage">
+    <BasicLayout
+      className="ui-container QuestionViewPage"
+      title={`Answer - ${title}`}
+    >
       <h1>{question.title || '(No title)'}</h1>
       <p>
         <Link {...getQuestionPath(null)}>

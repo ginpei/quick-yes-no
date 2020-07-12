@@ -40,6 +40,7 @@ const QuestionViewPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [el, question, answers, user, error] = usePrep(questionId);
 
+  const title = useMemo(() => question?.title || '(No title)', [question]);
   const answerMap = useMemo(() => createAnswerMap(answers), [answers]);
 
   if (error) {
@@ -51,8 +52,8 @@ const QuestionViewPage: React.FC = () => {
   }
 
   return (
-    <BasicLayout className="ui-container QuestionViewPage">
-      <h1>{question.title || '(No title)'}</h1>
+    <BasicLayout className="ui-container QuestionViewPage" title={title}>
+      <h1>{title}</h1>
       <p>
         <Link {...getQuestionPath(null)}>
           <a>Index</a>

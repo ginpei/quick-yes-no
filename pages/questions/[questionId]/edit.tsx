@@ -1,24 +1,24 @@
 import firebase from 'firebase/app';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
 import {
   QuestionCallback,
   QuestionForm,
 } from '../../../src/components/QuestionForm';
+import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
 import { initializeFirebase } from '../../../src/models/firebase';
 import {
   getQuestionPath,
+  isQuestionAuthor,
   Question,
   saveQuestion,
-  isQuestionAuthor,
 } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
-import { sleep } from '../../../src/util/sleep';
 import ErrorPage from '../../../src/screens/ErrorPage';
-import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
 import LoadingPage from '../../../src/screens/LoadingPage';
+import { sleep } from '../../../src/util/sleep';
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -32,6 +32,9 @@ const QuestionEditPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [user, userReady] = useFirebaseAuth(auth);
   const [el, initialQuestion] = useQuestionPagePrep(questionId);
+  const title = useMemo(() => initialQuestion?.title || '(No title)', [
+    initialQuestion,
+  ]);
 
   const onQuestionSubmit: QuestionCallback = useCallback(
     async (newQuestion: Question) => {
@@ -74,7 +77,10 @@ const QuestionEditPage: React.FC = () => {
   }
 
   return (
-    <BasicLayout className="ui-container QuestionEditPage">
+    <BasicLayout
+      className="ui-container QuestionEditPage"
+      title={`Edit - ${title}`}
+    >
       <h1>Edit</h1>
       <Link {...getQuestionPath(null)}>
         <a>Index</a>

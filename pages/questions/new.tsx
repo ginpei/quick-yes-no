@@ -7,15 +7,15 @@ import {
   QuestionForm,
 } from '../../src/components/QuestionForm';
 import { useFirebaseAuth } from '../../src/hooks/useFirebaseAuth';
+import { initializeFirebase } from '../../src/models/firebase';
 import {
   createQuestion,
+  getQuestionPath,
   Question,
   saveQuestion,
-  getQuestionPath,
 } from '../../src/models/Question';
-import { initializeFirebase } from '../../src/models/firebase';
-import { sleep } from '../../src/util/sleep';
 import NeedLoginPage from '../../src/screens/NeedLoginPage';
+import { sleep } from '../../src/util/sleep';
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -75,7 +75,7 @@ const NewQuestionPage: React.FC = () => {
   }
 
   return (
-    <BasicLayout>
+    <BasicLayout title="New question">
       <h1>NewQuestionPage</h1>
       <p>
         <Link {...getQuestionPath(null)}>
