@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
 import { OnDecide } from '../../../src/components/DecisionFlicker';
 import { InteractiveAnswerForm } from '../../../src/components/InteractiveAnswerForm';
+import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
 import { createAnswer, saveAnswer } from '../../../src/models/Answer';
 import { initializeFirebase } from '../../../src/models/firebase';
 import {
@@ -13,8 +14,10 @@ import {
   isQuestionAuthor,
 } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
+import NeedLoginPage from '../../../src/screens/NeedLoginPage';
 
 initializeFirebase();
+const auth = firebase.auth();
 const fs = firebase.firestore();
 
 const QuestionViewPage: React.FC = () => {
@@ -22,7 +25,8 @@ const QuestionViewPage: React.FC = () => {
   const { questionId } = router.query;
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [el, question, user] = useQuestionPagePrep(questionId);
+  const [user, userReady] = useFirebaseAuth(auth);
+  const [el, question] = useQuestionPagePrep(questionId);
 
   const onDecide: OnDecide = useCallback(
     async ({ candidate, category }) => {
@@ -46,6 +50,10 @@ const QuestionViewPage: React.FC = () => {
 
   if (!question) {
     return el;
+  }
+
+  if (userReady && !user) {
+    return <NeedLoginPage />;
   }
 
   return (

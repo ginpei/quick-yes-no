@@ -52,22 +52,24 @@ export async function getAnswersOf(
 export function useAnswersOf(
   fs: firestore.Firestore,
   questionId: string | undefined
-): [Answer[], boolean] {
-  const [answers, setAnswer] = useState<Answer[]>([]);
+): [Answer[], boolean, Error | null] {
+  const [answers, setAnswers] = useState<Answer[]>([]);
   const [ready, setReady] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!questionId) {
+      setAnswers([]);
       return;
     }
 
-    getAnswersOf(fs, questionId).then((v) => {
-      setAnswer(v);
-      setReady(true);
-    });
+    getAnswersOf(fs, questionId)
+      .then((v) => setAnswers(v))
+      .catch((v) => setError(v))
+      .finally(() => setReady(true));
   }, [fs, questionId]);
 
-  return [answers, ready];
+  return [answers, ready, error];
 }
 
 function getCollection(fs: firestore.Firestore, questionId: string) {

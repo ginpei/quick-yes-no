@@ -17,8 +17,11 @@ import {
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
 import { sleep } from '../../../src/util/sleep';
 import ErrorPage from '../../../src/screens/ErrorPage';
+import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
+import LoadingPage from '../../../src/screens/LoadingPage';
 
 initializeFirebase();
+const auth = firebase.auth();
 const fs = firebase.firestore();
 
 const QuestionEditPage: React.FC = () => {
@@ -27,7 +30,8 @@ const QuestionEditPage: React.FC = () => {
 
   const [formDisabled, setFormDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [el, initialQuestion, user] = useQuestionPagePrep(questionId);
+  const [user, userReady] = useFirebaseAuth(auth);
+  const [el, initialQuestion] = useQuestionPagePrep(questionId);
 
   const onQuestionSubmit: QuestionCallback = useCallback(
     async (newQuestion: Question) => {
@@ -57,7 +61,11 @@ const QuestionEditPage: React.FC = () => {
     [user]
   );
 
-  if (!initialQuestion || !user) {
+  if (!userReady) {
+    return <LoadingPage />;
+  }
+
+  if (!initialQuestion) {
     return el;
   }
 

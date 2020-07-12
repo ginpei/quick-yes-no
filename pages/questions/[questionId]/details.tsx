@@ -2,22 +2,16 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
-import { OnDecide } from '../../../src/components/DecisionFlicker';
-import { InteractiveAnswerForm } from '../../../src/components/InteractiveAnswerForm';
-import {
-  createAnswer,
-  saveAnswer,
-  useAnswersOf,
-  Answer,
-} from '../../../src/models/Answer';
+import { Answer, useAnswersOf } from '../../../src/models/Answer';
 import { initializeFirebase } from '../../../src/models/firebase';
 import { getQuestionPath, Question } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
+import ErrorPage from '../../../src/screens/ErrorPage';
 import LoadingPage from '../../../src/screens/LoadingPage';
 
-type Prep = [JSX.Element] | [null, Question, Answer[]];
+type Prep = [JSX.Element] | [null, Question, Answer[], Error | null];
 
 initializeFirebase();
 const fs = firebase.firestore();
@@ -30,7 +24,11 @@ const QuestionViewPage: React.FC = () => {
   }
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [el, question, answers] = usePrep(questionId);
+  const [el, question, answers, error] = usePrep(questionId);
+
+  if (error) {
+    return <ErrorPage error={error} />;
+  }
 
   if (!question || !answers) {
     return el;
@@ -68,7 +66,7 @@ export default QuestionViewPage;
 
 function usePrep(questionId: string | undefined): Prep {
   const [el, question] = useQuestionPagePrep(questionId);
-  const [answers, answersReady] = useAnswersOf(fs, questionId);
+  const [answers, answersReady, answersError] = useAnswersOf(fs, questionId);
 
   if (el) {
     return [el];
@@ -82,5 +80,5 @@ function usePrep(questionId: string | undefined): Prep {
     throw new Error();
   }
 
-  return [null, question, answers];
+  return [null, question, answers, answersError];
 }
