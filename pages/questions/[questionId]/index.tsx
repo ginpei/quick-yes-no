@@ -142,6 +142,7 @@ function createAnswerMap(answers: Answer[] | undefined): AnswerMap {
     return map;
   }
 
+  console.time('createAnswerMap');
   answers.forEach(({ candidate, category }) => {
     if (!map.has(candidate)) {
       map.set(candidate, new Map());
@@ -154,6 +155,7 @@ function createAnswerMap(answers: Answer[] | undefined): AnswerMap {
 
     m.set(category, m.get(category) || 0 + 1);
   });
+  console.timeEnd('createAnswerMap');
 
   return map;
 }
