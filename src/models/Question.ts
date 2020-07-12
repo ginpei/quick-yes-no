@@ -12,12 +12,12 @@ export interface Question extends DbRecord {
 }
 
 export type QuestionAction =
-  | 'new'
-  | 'index'
-  | 'view'
-  | 'details'
+  | 'answer'
+  | 'delete'
   | 'edit'
-  | 'delete';
+  | 'index'
+  | 'new'
+  | 'view';
 
 export function createQuestion(initial?: Partial<Question>): Question {
   return {

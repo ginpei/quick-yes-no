@@ -2,19 +2,23 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
-import { OnDecide } from '../../../src/components/DecisionFlicker';
-import { InteractiveAnswerForm } from '../../../src/components/InteractiveAnswerForm';
-import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
-import { createAnswer, saveAnswer } from '../../../src/models/Answer';
+import { Answer, useAnswersOf } from '../../../src/models/Answer';
 import { initializeFirebase } from '../../../src/models/firebase';
 import {
   getQuestionPath,
+  Question,
   isQuestionAuthor,
 } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
-import NeedLoginPage from '../../../src/screens/NeedLoginPage';
+import ErrorPage from '../../../src/screens/ErrorPage';
+import LoadingPage from '../../../src/screens/LoadingPage';
+import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
+
+type Prep =
+  | [JSX.Element]
+  | [null, Question, Answer[], firebase.User | null, Error | null];
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -23,37 +27,19 @@ const fs = firebase.firestore();
 const QuestionViewPage: React.FC = () => {
   const router = useRouter();
   const { questionId } = router.query;
-
-  const [errorMessage, setErrorMessage] = useState('');
-  const [user, userReady] = useFirebaseAuth(auth);
-  const [el, question] = useQuestionPagePrep(questionId);
-
-  const onDecide: OnDecide = useCallback(
-    async ({ candidate, category }) => {
-      if (!question || !user) {
-        throw new Error('Question or user have gone');
-      }
-
-      try {
-        const answer = createAnswer({
-          candidate: candidate.name,
-          category: category.name,
-          userId: user.uid,
-        });
-        await saveAnswer(fs, question.id, answer);
-      } catch (error) {
-        setErrorMessage(error?.message ?? 'Unknown error');
-      }
-    },
-    [question, user]
-  );
-
-  if (!question) {
-    return el;
+  if (questionId instanceof Array) {
+    throw new Error();
   }
 
-  if (userReady && !user) {
-    return <NeedLoginPage />;
+  const [errorMessage, setErrorMessage] = useState('');
+  const [el, question, answers, user, error] = usePrep(questionId);
+
+  if (error) {
+    return <ErrorPage error={error} />;
+  }
+
+  if (!question || !answers) {
+    return el;
   }
 
   return (
@@ -64,8 +50,8 @@ const QuestionViewPage: React.FC = () => {
           <a>Index</a>
         </Link>
         {' | '}
-        <Link {...getQuestionPath(question, 'details')}>
-          <a>Details</a>
+        <Link {...getQuestionPath(question, 'answer')}>
+          <a>Answer</a>
         </Link>
         {isQuestionAuthor(question, user) && (
           <>
@@ -77,9 +63,35 @@ const QuestionViewPage: React.FC = () => {
         )}
       </p>
       {errorMessage && <p>{errorMessage}</p>}
-      <InteractiveAnswerForm onDecide={onDecide} question={question} />
+      <ul>
+        {answers.map((answer) => (
+          <li key={answer.id}>
+            {answer.candidate} → {answer.category}
+          </li>
+        ))}
+      </ul>
     </BasicLayout>
   );
 };
 
 export default QuestionViewPage;
+
+function usePrep(questionId: string | undefined): Prep {
+  const [el, question] = useQuestionPagePrep(questionId);
+  const [answers, answersReady, answersError] = useAnswersOf(fs, questionId);
+  const [user, userReady] = useFirebaseAuth(auth);
+
+  if (el) {
+    return [el];
+  }
+
+  if (!answersReady || !userReady) {
+    return [<LoadingPage />];
+  }
+
+  if (!question) {
+    throw new Error();
+  }
+
+  return [null, question, answers, user, answersError];
+}
