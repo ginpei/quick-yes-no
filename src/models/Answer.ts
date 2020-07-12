@@ -11,6 +11,9 @@ export interface Answer extends DbRecord {
   userId: string;
 }
 
+export type AnswerCounts = Map<string, number>;
+export type AnswerMap = Map<string, AnswerCounts>;
+
 export function createAnswer(initial?: Partial<Answer>): Answer {
   return {
     candidate: createCandidate().name,
@@ -47,6 +50,31 @@ export async function getAnswersOf(
   const snapshot = await coll.orderBy('createdAt', 'desc').get();
   const questions = snapshot.docs.map((v) => ssToAnswer(v));
   return questions;
+}
+
+export function createAnswerMap(answers: Answer[] | undefined): AnswerMap {
+  const map: AnswerMap = new Map();
+
+  if (!answers) {
+    return map;
+  }
+
+  console.time('createAnswerMap');
+  answers.forEach(({ candidate, category }) => {
+    if (!map.has(candidate)) {
+      map.set(candidate, new Map());
+    }
+
+    const m = map.get(candidate);
+    if (!m) {
+      throw new Error();
+    }
+
+    m.set(category, m.get(category) || 0 + 1);
+  });
+  console.timeEnd('createAnswerMap');
+
+  return map;
 }
 
 export function useAnswersOf(

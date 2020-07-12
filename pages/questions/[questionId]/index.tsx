@@ -2,11 +2,16 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
 import { CandidateImage } from '../../../src/components/CandidateImage';
 import { useFirebaseAuth } from '../../../src/hooks/useFirebaseAuth';
-import { Answer, useAnswersOf } from '../../../src/models/Answer';
+import {
+  Answer,
+  AnswerCounts,
+  createAnswerMap,
+  useAnswersOf,
+} from '../../../src/models/Answer';
 import { Candidate } from '../../../src/models/Candidate';
 import { initializeFirebase } from '../../../src/models/firebase';
 import {
@@ -22,9 +27,6 @@ import styles from './index.module.scss';
 type Prep =
   | [JSX.Element]
   | [null, Question, Answer[], firebase.User | null, Error | null];
-
-type AnswerCounts = Map<string, number>;
-type AnswerMap = Map<string, AnswerCounts>;
 
 initializeFirebase();
 const auth = firebase.auth();
@@ -132,29 +134,4 @@ function usePrep(questionId: string | undefined): Prep {
   }
 
   return [null, question, answers, user, answersError];
-}
-
-function createAnswerMap(answers: Answer[] | undefined): AnswerMap {
-  const map: AnswerMap = new Map();
-
-  if (!answers) {
-    return map;
-  }
-
-  console.time('createAnswerMap');
-  answers.forEach(({ candidate, category }) => {
-    if (!map.has(candidate)) {
-      map.set(candidate, new Map());
-    }
-
-    const m = map.get(candidate);
-    if (!m) {
-      throw new Error();
-    }
-
-    m.set(category, m.get(category) || 0 + 1);
-  });
-  console.timeEnd('createAnswerMap');
-
-  return map;
 }
