@@ -37,7 +37,6 @@ const QuestionViewPage: React.FC = () => {
     throw new Error();
   }
 
-  const [errorMessage, setErrorMessage] = useState('');
   const [el, question, answers, user, error] = usePrep(questionId);
 
   const title = useMemo(() => question?.title || '(No title)', [question]);
@@ -71,7 +70,6 @@ const QuestionViewPage: React.FC = () => {
           </>
         )}
       </p>
-      {errorMessage && <p>{errorMessage}</p>}
       {question.candidates.map((candidate) => (
         <CandidateItem
           answerCounts={answerMap.get(candidate.name) ?? null}
