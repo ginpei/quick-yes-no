@@ -41,14 +41,14 @@ export function getQuestionPath(
     return { as: '/questions', href: '/questions' };
   }
 
-  const hrefBase = '/questions/[questionId]/';
-  const asBase = `/questions/${question.id}/`;
+  const hrefBase = '/questions/[questionId]';
+  const asBase = `/questions/${question.id}`;
 
   if (action === 'view') {
     return { as: asBase, href: hrefBase };
   }
 
-  return { as: `${asBase}${action}`, href: `${hrefBase}${action}` };
+  return { as: `${asBase}/${action}`, href: `${hrefBase}/${action}` };
 }
 
 export function isQuestionAuthor(
