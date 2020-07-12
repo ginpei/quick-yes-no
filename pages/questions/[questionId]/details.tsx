@@ -6,10 +6,18 @@ import { useCallback, useState } from 'react';
 import { BasicLayout } from '../../../src/components/BasicLayout';
 import { OnDecide } from '../../../src/components/DecisionFlicker';
 import { InteractiveAnswerForm } from '../../../src/components/InteractiveAnswerForm';
-import { createAnswer, saveAnswer } from '../../../src/models/Answer';
+import {
+  createAnswer,
+  saveAnswer,
+  useAnswersOf,
+  Answer,
+} from '../../../src/models/Answer';
 import { initializeFirebase } from '../../../src/models/firebase';
-import { getQuestionPath } from '../../../src/models/Question';
+import { getQuestionPath, Question } from '../../../src/models/Question';
 import { useQuestionPagePrep } from '../../../src/models/useQuestionPagePrep';
+import LoadingPage from '../../../src/screens/LoadingPage';
+
+type Prep = [JSX.Element] | [null, Question, Answer[]];
 
 initializeFirebase();
 const fs = firebase.firestore();
@@ -17,31 +25,14 @@ const fs = firebase.firestore();
 const QuestionViewPage: React.FC = () => {
   const router = useRouter();
   const { questionId } = router.query;
+  if (questionId instanceof Array) {
+    throw new Error();
+  }
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [el, question, user] = useQuestionPagePrep(questionId);
+  const [el, question, answers] = usePrep(questionId);
 
-  const onDecide: OnDecide = useCallback(
-    async ({ candidate, category }) => {
-      if (!question || !user) {
-        throw new Error('Question or user have gone');
-      }
-
-      try {
-        const answer = createAnswer({
-          candidate: candidate.name,
-          category: category.name,
-          userId: user.uid,
-        });
-        await saveAnswer(fs, question.id, answer);
-      } catch (error) {
-        setErrorMessage(error?.message ?? 'Unknown error');
-      }
-    },
-    [question, user]
-  );
-
-  if (!question) {
+  if (!question || !answers) {
     return el;
   }
 
@@ -53,8 +44,8 @@ const QuestionViewPage: React.FC = () => {
           <a>Index</a>
         </Link>
         {' | '}
-        <Link {...getQuestionPath(question, 'details')}>
-          <a>Details</a>
+        <Link {...getQuestionPath(question, 'view')}>
+          <a>View</a>
         </Link>
         {' | '}
         <Link {...getQuestionPath(question, 'edit')}>
@@ -62,9 +53,34 @@ const QuestionViewPage: React.FC = () => {
         </Link>
       </p>
       {errorMessage && <p>{errorMessage}</p>}
-      <InteractiveAnswerForm onDecide={onDecide} question={question} />
+      <ul>
+        {answers.map((answer) => (
+          <li key={answer.id}>
+            {answer.candidate} → {answer.category}
+          </li>
+        ))}
+      </ul>
     </BasicLayout>
   );
 };
 
 export default QuestionViewPage;
+
+function usePrep(questionId: string | undefined): Prep {
+  const [el, question] = useQuestionPagePrep(questionId);
+  const [answers, answersReady] = useAnswersOf(fs, questionId);
+
+  if (el) {
+    return [el];
+  }
+
+  if (!answersReady) {
+    return [<LoadingPage />];
+  }
+
+  if (!question) {
+    throw new Error();
+  }
+
+  return [null, question, answers];
+}

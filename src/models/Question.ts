@@ -11,7 +11,13 @@ export interface Question extends DbRecord {
   userId: string;
 }
 
-export type QuestionAction = 'new' | 'index' | 'view' | 'edit' | 'delete';
+export type QuestionAction =
+  | 'new'
+  | 'index'
+  | 'view'
+  | 'details'
+  | 'edit'
+  | 'delete';
 
 export function createQuestion(initial?: Partial<Question>): Question {
   return {

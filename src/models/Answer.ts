@@ -1,5 +1,6 @@
 import { firestore } from 'firebase/app';
 import 'firebase/firestore';
+import { useState, useEffect } from 'react';
 import { Candidate, createCandidate } from './Candidate';
 import { Category, createCategory } from './Category';
 import { createDbRecord, DbRecord, setTimestamps } from './DbRecord';
@@ -36,6 +37,37 @@ export async function saveAnswer(
 
   const refQuestion = await coll.add(presentAnswer);
   return ssToAnswer(await refQuestion.get());
+}
+
+export async function getAnswersOf(
+  fs: firestore.Firestore,
+  questionId: string
+): Promise<Answer[]> {
+  const coll = getCollection(fs, questionId);
+  const snapshot = await coll.orderBy('createdAt', 'desc').get();
+  const questions = snapshot.docs.map((v) => ssToAnswer(v));
+  return questions;
+}
+
+export function useAnswersOf(
+  fs: firestore.Firestore,
+  questionId: string | undefined
+): [Answer[], boolean] {
+  const [answers, setAnswer] = useState<Answer[]>([]);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (!questionId) {
+      return;
+    }
+
+    getAnswersOf(fs, questionId).then((v) => {
+      setAnswer(v);
+      setReady(true);
+    });
+  }, [fs]);
+
+  return [answers, ready];
 }
 
 function getCollection(fs: firestore.Firestore, questionId: string) {
