@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Candidate } from '../models/Candidate';
 import { Question } from '../models/Question';
 import { DecisionFlicker, OnDecide } from './DecisionFlicker';
+import { randomizeArray } from '../util/randomizeArray';
 
 /**
  * Stateful component of `DecisionFlicker`.
@@ -28,8 +29,9 @@ export const InteractiveAnswerForm: React.FC<{
   );
 
   useEffect(() => {
-    setCurrent(question.candidates[0]);
-    setRestCandidates(question.candidates.slice(1));
+    const candidates = randomizeArray(question.candidates);
+    setCurrent(candidates[0]);
+    setRestCandidates(candidates.slice(1));
   }, [question]);
 
   useEffect(() => {
