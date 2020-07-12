@@ -103,18 +103,26 @@ export async function getLatestQuestion(
  */
 export function useLatestQuestions(
   fs: firestore.Firestore
-): [Question[], boolean] {
+): [Question[], boolean, Error | null] {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [ready, setReady] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    getLatestQuestions(fs).then((v) => {
-      setQuestions(v);
-      setReady(true);
-    });
+    setError(null);
+    getLatestQuestions(fs)
+      .then((v) => {
+        setQuestions(v);
+      })
+      .catch((e) => {
+        setError(e);
+      })
+      .finally(() => {
+        setReady(true);
+      });
   }, [fs]);
 
-  return [questions, ready];
+  return [questions, ready, error];
 }
 
 export function useLatestQuestion(

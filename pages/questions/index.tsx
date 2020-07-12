@@ -6,12 +6,19 @@ import {
   useLatestQuestions,
 } from '../../src/models/Question';
 import { initializeFirebase } from '../../src/models/firebase';
+import ErrorPage from '../../src/screens/ErrorPage';
+import { useFirebaseAuth } from '../../src/hooks/useFirebaseAuth';
 
 initializeFirebase();
+const auth = firebase.auth();
 const fs = firebase.firestore();
 
 const QuestionIndexPage: React.FC = () => {
-  const [questions, questionsReady] = useLatestQuestions(fs);
+  const [questions, questionsReady, error] = useLatestQuestions(fs);
+
+  if (error) {
+    return <ErrorPage error={error} />;
+  }
 
   return (
     <div className="ui-container QuestionIndexPage">
