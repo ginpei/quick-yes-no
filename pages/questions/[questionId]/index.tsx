@@ -99,7 +99,7 @@ const CandidateItem: React.FC<{
       arr.push([count, `${categoryName} (${count})`]);
     });
 
-    arr.sort(([c1], [c2]) => c1 - c2);
+    arr.sort(([c1], [c2]) => c2 - c1);
     const result = arr.map(([, v]) => v).join(', ');
     return result;
   }, [answerCounts]);
