@@ -70,7 +70,7 @@ export function createAnswerMap(answers: Answer[] | undefined): AnswerMap {
       throw new Error();
     }
 
-    m.set(category, m.get(category) || 0 + 1);
+    m.set(category, (m.get(category) || 0) + 1);
   });
   console.timeEnd('createAnswerMap');
 
